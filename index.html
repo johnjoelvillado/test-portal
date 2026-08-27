@@ -3,86 +3,200 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="icon" type="image/svg+xml" href="https://xuredeal.com/X%20Gold.svg">
+    <!-- Google Fonts for Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0b0a07;
+            --card-bg: linear-gradient(145deg, #1d180d 0%, #11100b 100%);
+            --border-color: rgba(212, 175, 55, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #a39e8e;
+            --accent-gold: #d4af37;
+            --primary-purple: #7c3aed;
+            --primary-purple-hover: #6d28d9;
+            --input-bg: rgba(255, 255, 255, 0.04);
+            --error-color: #f87171;
+        }
+
+        html,
         body {
-            font-family: Arial, sans-serif;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: #f4f4f9;
-            margin: 0;
+            background: radial-gradient(circle at 30% 40%, #241e10 0%, #110e07 50%, var(--bg-color) 100%);
+            color: var(--text-main);
+            position: relative;
+        }
+
+        /* Watermark with blur removed */
+        .bg-watermark {
+            position: fixed;
+            top: 58%;
+            left: 76%;
+            width: 55%;
+            opacity: 0.18;
+            filter: none;
+            transform: translate(-50%, -50%) translateY(-10%) scale(1.2);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Outer decorative border lines inset from the screen edges */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            pointer-events: none;
+            z-index: 2;
+            border-radius: 12px;
+        }
+
+        /* Subtle dark gold ambient glow layer */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 500px;
+            height: 500px;
+            background: rgba(212, 175, 55, 0.08);
+            filter: blur(150px);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 320px;
+            position: relative;
+            z-index: 3;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            width: 100%;
+            max-width: 380px;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            margin-bottom: 2rem;
+            text-align: center;
         }
 
         .card h2 {
-            margin-top: 0;
-            color: #333;
+            margin: 0 0 0.4rem 0;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 0;
         }
 
         label {
-            font-size: 0.85rem;
-            color: #666;
-            font-weight: bold;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
             display: block;
-            margin-top: 10px;
+            margin-top: 1.1rem;
+            margin-bottom: 0.4rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin: 5px 0 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 14px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 10px;
             box-sizing: border-box;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        input:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+            background: rgba(255, 255, 255, 0.07);
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            background: #007bff;
+            padding: 12px;
+            background: var(--primary-purple);
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 5px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 1.75rem;
+            transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
         }
 
         button:hover {
-            background: #0056b3;
+            background: var(--primary-purple-hover);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         #message {
-            color: red;
-            font-size: 0.9rem;
+            color: var(--error-color);
+            font-size: 0.85rem;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 1rem;
+            min-height: 1.2rem;
+            font-weight: 500;
         }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="baseUrl">Passkey</label>
-            <input type="text" id="baseUrl" placeholder="Passkey" required autocomplete="off">
+    <!-- Background Watermark Image -->
+    <img class="bg-watermark" src="https://xuredeal.com/X%20Gold.svg" alt="Xure Watermark">
 
+    <div class="card">
+        <div class="card-header">
+            <h2>Sign In</h2>
+            <p class="card-subtitle">Enter your credentials to continue</p>
+        </div>
+
+        <form id="loginForm">
             <label for="email">Email</label>
-            <input type="text" id="email" placeholder="Email" required autocomplete="email">
+            <input type="text" id="email" placeholder="name@example.com" required autocomplete="email">
 
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Password" required>
+            <input type="password" id="password" placeholder="••••••••" required>
 
             <button type="submit">Sign In</button>
         </form>
@@ -90,25 +204,24 @@
     </div>
 
     <script>
-        // Ensure the Base URL field starts blank on every load
-        document.getElementById('baseUrl').value = '';
+        // Hardcoded API Base URL
+        const API_BASE_URL = 'https://24c1tkvfsa.execute-api.ap-southeast-1.amazonaws.com/xdeal';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const baseUrlInput = atob(document.getElementById('baseUrl').value).trim().replace(/\/+$/, '');
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const messageEl = document.getElementById('message');
 
-            // Save Base URL to localStorage so it stays active until logout
-            localStorage.setItem('apiBaseUrl', baseUrlInput);
+            // Save Base URL to localStorage so downstream pages (like the dashboard) can access it
+            localStorage.setItem('apiBaseUrl', API_BASE_URL);
 
-            messageEl.style.color = "blue";
+            messageEl.style.color = "#a78bfa";
             messageEl.innerText = "Logging in...";
 
             try {
-                const response = await fetch(`${baseUrlInput}/LoginPortalAccount`, {
+                const response = await fetch(`${API_BASE_URL}/LoginPortalAccount`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -143,7 +256,7 @@
 
             } catch (error) {
                 console.error('API Error:', error);
-                messageEl.style.color = "red";
+                messageEl.style.color = "var(--error-color)";
                 messageEl.innerText = error.message || "Something went wrong";
             }
         });

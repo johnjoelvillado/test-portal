@@ -3,79 +3,443 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="https://xuredeal.com/X%20Gold.svg">
+    <!-- Google Fonts for Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Include Flatpickr CSS for the calendar widget -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
+        :root {
+            --bg-color: #0b0a07;
+            /* Container background transparency set to 0.10 to reveal the background logo */
+            --card-bg: linear-gradient(145deg, rgba(29, 24, 13, 0.10) 0%, rgba(17, 16, 11, 0.10) 100%);
+            --border-color: rgba(212, 175, 55, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #a39e8e;
+            --accent-gold: #d4af37;
+            --primary-purple: #7c3aed;
+            --primary-purple-hover: #6d28d9;
+            --error-color: #f87171;
+            --success-color: #10b981;
+        }
+
+        html,
         body {
-            font-family: Arial, sans-serif;
+            height: 100%;
             margin: 0;
-            padding: 0;
-            background: #f4f4f9;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 30% 40%, #241e10 0%, #110e07 50%, var(--bg-color) 100%);
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            position: relative;
         }
 
-        /* Top Right Profile Bar */
+        /* Watermark matched from sign-in page */
+        .bg-watermark {
+            position: fixed;
+            top: 58%;
+            left: 76%;
+            width: 55%;
+            opacity: 0.18;
+            filter: none;
+            transform: translate(-50%, -50%) translateY(-10%) scale(1.2);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Subtle dark gold ambient glow layer */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 500px;
+            height: 500px;
+            background: rgba(212, 175, 55, 0.08);
+            filter: blur(150px);
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Top Header Bar */
         .header-bar {
+            position: relative;
+            z-index: 10;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px 30px;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 20px 40px;
+            background: transparent;
+        }
+
+        .header-left-group {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .header-action-text {
+            background: transparent;
+            border: none;
+            color: var(--accent-gold);
+            padding: 8px 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            text-decoration: none;
+            position: relative;
+            text-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .header-action-text::before {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110%;
+            height: 8px;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.8) 0%, rgba(212, 175, 55, 0.3) 55%, rgba(212, 175, 55, 0) 85%);
+            filter: blur(5px);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .header-action-text:hover {
+            color: #fff;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.7);
+            transform: translateY(-1px);
+        }
+
+        .header-action-text:hover::before {
+            bottom: -8px;
+            width: 125%;
+            height: 10px;
+            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 1) 0%, rgba(212, 175, 55, 0.45) 60%, rgba(212, 175, 55, 0) 90%);
+            filter: blur(6px);
+        }
+
+        .header-action-text.active-nav {
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
+        }
+
+        /* Profile Dropdown Container */
+        .profile-dropdown-container {
+            position: relative;
         }
 
         .profile-widget {
             display: flex;
             align-items: center;
             gap: 15px;
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 10px 20px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .profile-widget:hover {
+            border-color: rgba(212, 175, 55, 0.8);
         }
 
         .profile-details {
             text-align: right;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         .profile-details .name {
-            font-weight: bold;
-            color: #333;
-            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 14px;
         }
 
         .profile-details .meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            color: var(--accent-gold);
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 100%;
+            min-width: 180px;
+            background: rgba(21, 18, 10, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            display: none;
+            flex-direction: column;
+            z-index: 20;
+            overflow: hidden;
+            animation: fadeIn 0.15s ease-out forwards;
+        }
+
+        .dropdown-menu.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-option {
+            background: transparent;
+            color: var(--error-color);
+            border: none;
+            padding: 12px 16px;
+            text-align: left;
             font-size: 13px;
-            color: #666;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            transition: background 0.15s ease;
+        }
+
+        .logout-option:hover {
+            background: rgba(239, 68, 68, 0.1);
         }
 
         /* Center Dashboard Content Area */
         .main-container {
+            position: relative;
+            z-index: 3;
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 30px 20px;
+            padding: 10px 40px 40px 40px;
             width: 100%;
             box-sizing: border-box;
+            gap: 25px;
         }
 
+        /* HIGHLY TRANSPARENT PARENT CARDS */
+        .api-external-card,
         .card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: fit-content;
-            max-width: none;
+            background: var(--card-bg);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            position: relative;
         }
 
-        /* Card Header Layout */
-        .card-header-flex {
+        .api-external-card {
+            display: none;
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+
+        .api-external-card.show {
+            display: block;
+        }
+
+        .api-external-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding-right: 35px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .api-external-title-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .api-external-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin: 0;
+        }
+
+        .clear-selection-btn {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            color: var(--error-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        .clear-selection-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: rgba(248, 113, 113, 0.8);
+        }
+
+        /* GRAYER & SHARPER CLOSE BUTTON WITH CHARACTER */
+        .api-external-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(65, 62, 57, 0.85), rgba(45, 42, 38, 0.9));
+            border: 1px solid rgba(163, 158, 142, 0.45);
+            color: #e5e2d9;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .api-external-close-btn:hover {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.4));
+            color: #ffffff;
+            border-color: rgba(248, 113, 113, 0.8);
+            transform: scale(1.08);
+        }
+
+        .api-cards-grid {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            overflow-x: auto;
+            padding: 12px 6px 20px 6px;
+            box-sizing: border-box;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-gold) rgba(255, 255, 255, 0.05);
+        }
+
+        .api-cards-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .api-cards-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .api-cards-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 4px;
+        }
+
+        .api-item-card {
+            background: rgba(28, 23, 14, 0.95);
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            border-radius: 16px;
+            padding: 18px;
+            min-width: 280px;
+            max-width: 300px;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .api-item-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(212, 175, 55, 0.8);
+            box-shadow: 0 12px 28px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Highly noticeable selection styling without label check */
+        .api-item-card.selected {
+            background: linear-gradient(145deg, rgba(42, 35, 18, 0.98), rgba(26, 22, 10, 0.98));
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .api-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0;
+            line-height: 1.4;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .api-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .api-card-label-muted {
+            color: var(--text-muted);
+        }
+
+        .api-card-value-highlight {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        /* Main Transactions Card Setup */
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
             gap: 20px;
             flex-wrap: wrap;
         }
@@ -88,69 +452,86 @@
 
         .action-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
-        h2 {
-            margin: 0;
-            color: #333;
-        }
-
-        /* Transaction Type Selector Dropdown */
         .transaction-type-select {
-            padding: 6px 10px;
-            font-size: 13px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: white;
+            padding: 10px 42px 10px 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(212, 175, 55, 0.02)),
+                url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 16px center;
+            color: var(--text-main);
             outline: none;
             cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
         }
 
-        .transaction-type-select:focus {
-            border-color: #007bff;
+        .transaction-type-select option {
+            background: #11100b;
+            color: var(--text-main);
+            font-size: 1rem;
         }
 
-        /* Action Buttons */
         .clear-btn,
         .export-btn {
-            padding: 6px 12px;
-            background: #e9ecef;
-            color: #333;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
+            padding: 10px 16px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            transition: background 0.2s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            outline: none;
         }
 
-        .clear-btn:hover,
-        .export-btn:hover {
-            background: #dee2e6;
+        .clear-btn {
+            background: linear-gradient(135deg, rgba(55, 52, 47, 0.95), rgba(38, 36, 32, 0.95));
+            color: #e5e2d9;
+            border: 1px solid rgba(163, 158, 142, 0.45);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+        }
+
+        .clear-btn:hover {
+            border-color: rgba(212, 175, 55, 0.8);
+            background: linear-gradient(135deg, rgba(70, 66, 60, 0.95), rgba(50, 47, 42, 0.95));
+            color: #ffffff;
+            transform: translateY(-1px);
         }
 
         .export-btn {
-            background: #28a745;
+            background: var(--success-color);
             color: white;
-            border-color: #28a745;
+            border: none;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
         }
 
-        .export-btn:hover {
-            background: #218838;
-        }
-
-        /* Responsive Scrollable Table Wrapper */
         .table-responsive {
-            width: fit-content;
+            width: 100%;
             overflow-x: auto;
-            max-height: 70vh;
-            border: 1px solid #eee;
-            border-radius: 4px;
-            max-width: 85vw;
+            max-height: 78vh;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            background: #ffffff;
+            color: #0f172a;
+            position: relative;
         }
 
-        /* CSS Grid Table Architecture */
+        .table-footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding: 0 4px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
         .grid-table {
             display: grid;
         }
@@ -160,65 +541,57 @@
         }
 
         .grid-cell {
-            padding: 10px 14px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e2e8f0;
             font-size: 13px;
             white-space: nowrap;
-            background-color: white;
+            background-color: #ffffff;
+            color: #0f172a;
         }
 
         .grid-header .grid-cell {
-            background-color: #f8f9fa;
-            color: #333;
-            font-weight: bold;
-            text-transform: capitalize;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
             position: sticky;
             top: 0;
             z-index: 10;
-            border-bottom: 2px solid #ccc;
+            border-bottom: 2px solid #cbd5e1;
             vertical-align: top;
         }
 
-        /* Per-Column Header Layout */
         .header-content {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 8px;
             min-width: 160px;
         }
 
         .column-search-input,
         .date-input,
         .numeric-range-input {
-            padding: 5px 8px;
+            padding: 8px 10px;
             font-size: 12px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
             outline: none;
             font-weight: normal;
             width: 100%;
             box-sizing: border-box;
-            background: white;
+            background: #ffffff;
+            color: #0f172a;
         }
 
-        .column-search-input:focus,
-        .date-input:focus,
-        .numeric-range-input:focus {
-            border-color: #007bff;
-        }
-
-        /* Numeric Range Container */
         .numeric-range-container {
             display: flex;
-            gap: 4px;
+            gap: 6px;
         }
 
         .numeric-range-container input {
             width: 50%;
         }
 
-        /* Date Input Wrapper with individual clear button */
         .date-input-wrapper {
             position: relative;
             display: flex;
@@ -237,66 +610,99 @@
             background: none;
             border: none;
             font-size: 14px;
-            color: #999;
+            color: #64748b;
             cursor: pointer;
             padding: 0;
-            line-height: 1;
             display: none;
-        }
-
-        .clear-date-btn:hover {
-            color: #333;
-        }
-
-        /* Buttons */
-        .logout-btn {
-            padding: 8px 12px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background: #5a6268;
         }
 
         .loading-text,
         .error-text {
             text-align: center;
-            padding: 20px;
-            color: #666;
+            padding: 40px;
+            color: #64748b;
             white-space: normal;
             grid-column: 1 / -1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 500;
         }
 
-        .error-text {
-            color: #dc3545;
+        .spinner-small {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(212, 175, 55, 0.2);
+            border-top: 3px solid var(--accent-gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Top Right Profile Bar -->
+    <!-- Background Watermark Image matching Sign In -->
+    <img class="bg-watermark" src="https://xuredeal.com/X%20Gold.svg" alt="Xure Watermark">
+
+    <!-- Top Header Bar -->
     <header class="header-bar">
-        <div class="profile-widget">
-            <div class="profile-details">
-                <div class="name" id="nameDisplay">Loading...</div>
-                <div class="meta"><span id="roleDisplay">Role</span> | <span id="accountCodeDisplay">Code</span></div>
+        <div class="header-left-group" id="headerNavContainer"></div>
+
+        <div class="profile-dropdown-container" id="profileDropdownContainer">
+            <div class="profile-widget" id="profileWidgetBtn">
+                <div class="profile-details">
+                    <div class="name" id="nameDisplay">Loading...</div>
+                    <div class="meta"><span id="roleDisplay">Role</span> | <span id="accountCodeDisplay">Code</span>
+                    </div>
+                </div>
+                <span class="dropdown-arrow">▼</span>
             </div>
-            <button class="logout-btn" id="logoutBtn">Log Out</button>
+            <div class="dropdown-menu" id="profileDropdownMenu">
+                <button class="logout-option" id="logoutBtn">
+                    <span>⮜ Log Out</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- Center Dashboard Content Area -->
     <div class="main-container">
+
+        <!-- SEPARATE API CARD CONTAINER -->
+        <div class="api-external-card" id="apiExternalCard">
+            <!-- Close button positioned at the top-right corner -->
+            <button class="api-external-close-btn" id="apiExternalCloseBtn" title="Close">&times;</button>
+            <div class="api-external-header">
+                <div class="api-external-title-group">
+                    <h3 class="api-external-title" id="apiExternalTitleText">Records</h3>
+                    <button class="clear-selection-btn" id="clearSelectionBtn">Clear Selection (0)</button>
+                </div>
+            </div>
+            <div id="apiExternalCardsContainer">
+                <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                    <div class="spinner-small" style="margin: 0 auto 10px auto;"></div>
+                    <span>Loading API records...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN TRANSACTIONS CARD CONTAINER -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-group">
-                    <h2>Transaction Records</h2>
-                    <!-- Transaction Type Dropdown -->
                     <select id="transactionTypeSelect" class="transaction-type-select">
                         <option value="wallet">Wallet Transactions</option>
                         <option value="xure_credits">Xure Credits Transactions</option>
@@ -308,34 +714,305 @@
                 </div>
             </div>
 
-            <!-- Scrollable wrapper to safely fit wide data sets -->
+            <!-- Transactions Table View -->
             <div class="table-responsive">
                 <div class="grid-table" id="dynamicGridTable">
-                    <div class="grid-header" id="tableHeaderRow">
-                        <!-- Dynamic columns injected here -->
-                    </div>
+                    <div class="grid-header" id="tableHeaderRow"></div>
                     <div id="tableBody" style="display: contents;">
-                        <div class="grid-cell loading-text">Loading data from server...</div>
+                        <div class="grid-cell loading-text">
+                            <div class="spinner-small"></div>
+                            <span>Loading data from server...</span>
+                        </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="table-footer-info">
+                <span id="rowCountDisplay">Loading rows...</span>
             </div>
         </div>
     </div>
 
-    <!-- Include Flatpickr JS Library -->
+    <!-- Include Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- Include SheetJS (xlsx) Library for Excel Export -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <script>
+        const navItems = [
+            { label: 'Box Breaks', id: 'box_break' },
+            { label: 'Auctions', id: 'auction' }
+        ];
+
+        // In-memory runtime caches
+        const apiResponseCache = {};
+        const auctionOrdersCache = {}; // Cache for auction order IDs
+
+        let selectedBoxBreaks = new Set();
+        let selectedAuctions = new Set();
+        let auctionOrderMap = {}; // Stores map of auction code -> array of order IDs
+
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+
+        // Update clear selection button visibility and total combined count
+        function updateClearSelectionButton() {
+            const totalSelected = selectedBoxBreaks.size + selectedAuctions.size;
+            if (totalSelected > 0) {
+                clearSelectionBtn.style.display = 'inline-block';
+                clearSelectionBtn.innerText = `Clear Selection (${totalSelected})`;
+            } else {
+                clearSelectionBtn.style.display = 'none';
+            }
+        }
+
+        clearSelectionBtn.addEventListener('click', () => {
+            selectedBoxBreaks.clear();
+            selectedAuctions.clear();
+            document.querySelectorAll('.api-item-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            updateClearSelectionButton();
+            filterTransactionsBySelection();
+        });
+
+        // Real API integration for ListPortalEvents with caching wrapper
+        async function fetchPortalEventsApi(navId, token, apiBaseUrl) {
+            if (apiResponseCache[navId]) {
+                return apiResponseCache[navId];
+            }
+
+            const response = await fetch(`${apiBaseUrl}/ListPortalEvents`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: token,
+                    event_type: navId
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data.');
+            }
+
+            const result = await response.json();
+            const data = Array.isArray(result) ? result : (result.data || result.rows || []);
+
+            apiResponseCache[navId] = data;
+            return data;
+        }
+
+        // Fetch order IDs for an auction using auction_id with session caching
+        async function fetchAuctionOrdersApi(auctionId, token, apiBaseUrl) {
+            const sessionCacheKey = `auction_orders_${auctionId}`;
+            if (auctionOrdersCache[auctionId]) {
+                return auctionOrdersCache[auctionId];
+            }
+
+            const cachedSession = sessionStorage.getItem(sessionCacheKey);
+            if (cachedSession) {
+                try {
+                    const parsed = JSON.parse(cachedSession);
+                    auctionOrdersCache[auctionId] = parsed;
+                    return parsed;
+                } catch (e) {
+                    sessionStorage.removeItem(sessionCacheKey);
+                }
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/GetAuctionOrders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: token,
+                        auction_id: auctionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch auction orders.');
+                }
+
+                const result = await response.json();
+                const rawList = Array.isArray(result) ? result : (result.data || result.rows || []);
+
+                const orderIds = rawList.map(item => item.order_id || item.id || item).filter(Boolean);
+
+                auctionOrdersCache[auctionId] = orderIds;
+                sessionStorage.setItem(sessionCacheKey, JSON.stringify(orderIds));
+                return orderIds;
+            } catch (err) {
+                console.error('Error fetching auction orders:', err);
+                return [];
+            }
+        }
+
+        const apiExternalCard = document.getElementById('apiExternalCard');
+        const apiExternalCloseBtn = document.getElementById('apiExternalCloseBtn');
+
+        apiExternalCloseBtn.addEventListener('click', () => {
+            apiExternalCard.classList.remove('show');
+            document.querySelectorAll('.header-action-text').forEach(b => b.classList.remove('active-nav'));
+        });
+
+        function renderHeaderNav() {
+            const container = document.getElementById('headerNavContainer');
+            container.innerHTML = '';
+
+            navItems.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'header-action-text';
+                btn.id = `nav_btn_${item.id}`;
+                btn.innerText = item.label;
+
+                btn.addEventListener('click', async () => {
+                    document.querySelectorAll('.header-action-text').forEach(b => b.classList.remove('active-nav'));
+                    btn.classList.add('active-nav');
+
+                    apiExternalCard.classList.add('show');
+                    document.getElementById('apiExternalTitleText').innerText = item.label;
+
+                    const cardsContainer = document.getElementById('apiExternalCardsContainer');
+                    cardsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            <div class="spinner-small" style="margin: 0 auto 10px auto;"></div>
+                            <span>Fetching data...</span>
+                        </div>
+                    `;
+
+                    try {
+                        const token = localStorage.getItem('token');
+                        const apiBaseUrl = localStorage.getItem('apiBaseUrl');
+
+                        const resultList = await fetchPortalEventsApi(item.id, token, apiBaseUrl);
+
+                        if (!resultList || resultList.length === 0) {
+                            cardsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--text-muted);">No records found.</div>`;
+                            return;
+                        }
+
+                        let gridHtml = `<div class="api-cards-grid">`;
+                        resultList.forEach(entry => {
+                            const title = entry.title || Object.values(entry)[0];
+                            let footerHtml = '';
+
+                            for (const [key, val] of Object.entries(entry)) {
+                                // Skip title, matching values, and ANY ID fields so they don't show up visually
+                                if (key === 'title' || val === title || key.endsWith('_id') || key.includes('_id')) continue;
+
+                                if (val !== null && val !== undefined && val !== '') {
+                                    const formattedKey = key.replace(/_/g, ' ');
+                                    footerHtml += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: 4px;"><span class="api-card-label-muted" style="text-transform: capitalize;">${formattedKey}:</span><span class="api-card-value-highlight">${val}</span></div>`;
+                                }
+                            }
+
+                            switch (item.id) {
+                                case 'box_break': {
+                                    const boxBreakCode = entry.box_break_code || '';
+                                    const boxBreakId = entry.box_break_id || entry.id || '';
+                                    const isSelected = selectedBoxBreaks.has(boxBreakCode);
+
+                                    gridHtml += `
+                                        <div class="api-item-card ${isSelected ? 'selected' : ''}" 
+                                            data-box-break-code="${boxBreakCode}"
+                                            data-box-break-id="${boxBreakId}">
+                                            <h4 class="api-card-title" title="${title}">${title}</h4>
+                                            <div>${footerHtml}</div>
+                                        </div>
+                                    `;
+                                    break;
+                                }
+                                case 'auction': {
+                                    const auctionCode = entry.auction_code || '';
+                                    const auctionId = entry.auction_id || entry.id || '';
+                                    const isSelected = selectedAuctions.has(auctionCode);
+
+                                    gridHtml += `
+                                        <div class="api-item-card ${isSelected ? 'selected' : ''}" 
+                                            data-auction-code="${auctionCode}"
+                                            data-auction-id="${auctionId}">
+                                            <h4 class="api-card-title" title="${title}">${title}</h4>
+                                            <div>${footerHtml}</div>
+                                        </div>
+                                    `;
+                                    break;
+                                }
+                                default:
+                                    console.error('Invalid nav type:', item.id);
+                                    break;
+                            }
+                        });
+                        gridHtml += `</div>`;
+                        cardsContainer.innerHTML = gridHtml;
+
+                        updateClearSelectionButton();
+
+                        // Add click listeners to cards for multi-selection and filtering
+                        document.querySelectorAll('.api-item-card').forEach(card => {
+                            card.addEventListener('click', async () => {
+                                const activeNav = document.querySelector('.header-action-text.active-nav');
+                                const isAuction = activeNav && activeNav.id === 'nav_btn_auction';
+
+                                if (isAuction) {
+                                    const auctionCode = card.getAttribute('data-auction-code');
+                                    const auctionId = card.getAttribute('data-auction-id');
+                                    if (!auctionCode) return;
+
+                                    if (selectedAuctions.has(auctionCode)) {
+                                        selectedAuctions.delete(auctionCode);
+                                        delete auctionOrderMap[auctionCode];
+                                        card.classList.remove('selected');
+                                    } else {
+                                        selectedAuctions.add(auctionCode);
+                                        card.classList.add('selected');
+
+                                        // Fetch order IDs via API and cache them
+                                        if (auctionId) {
+                                            const token = localStorage.getItem('token');
+                                            const apiBaseUrl = localStorage.getItem('apiBaseUrl');
+                                            const orderIds = await fetchAuctionOrdersApi(auctionId, token, apiBaseUrl);
+                                            auctionOrderMap[auctionCode] = orderIds;
+                                        }
+                                    }
+                                } else {
+                                    const code = card.getAttribute('data-box-break-code');
+                                    if (!code) return;
+
+                                    if (selectedBoxBreaks.has(code)) {
+                                        selectedBoxBreaks.delete(code);
+                                        card.classList.remove('selected');
+                                    } else {
+                                        selectedBoxBreaks.add(code);
+                                        card.classList.add('selected');
+                                    }
+                                }
+
+                                updateClearSelectionButton();
+                                filterTransactionsBySelection();
+                            });
+                        });
+
+                    } catch (err) {
+                        console.error('API Error:', err);
+                        cardsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--error-color);">Failed to retrieve records from server.</div>`;
+                    }
+                });
+
+                container.appendChild(btn);
+            });
+        }
+
+        renderHeaderNav();
+
         let allTransactions = [];
-        let filteredTransactions = []; // Tracks currently displayed/filtered records
+        let filteredTransactions = [];
         let columns = [];
         const dateColumns = new Set();
         const numericColumns = new Set();
         const calendarInstances = {};
 
-        // 1. Authentication Check & Base URL Retrieval
+        // Cache prefix configuration for session persistence
+        const CACHE_KEY_PREFIX = 'portal_trans_cache_';
+
         const token = localStorage.getItem('token');
         const apiBaseUrl = localStorage.getItem('apiBaseUrl');
 
@@ -352,14 +1029,26 @@
             }
         }
 
-        // Helper: Categorize columns into Dates, Numbers, or text search
+        const profileWidgetBtn = document.getElementById('profileWidgetBtn');
+        const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+
+        profileWidgetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdownMenu.classList.toggle('show');
+        });
+
+        window.addEventListener('click', () => {
+            if (profileDropdownMenu.classList.contains('show')) {
+                profileDropdownMenu.classList.remove('show');
+            }
+        });
+
         function classifyColumns(data, cols) {
             dateColumns.clear();
             numericColumns.clear();
 
             cols.forEach(col => {
                 const lowerCol = col.toLowerCase();
-
                 if (lowerCol.includes('date') || lowerCol.includes('created_at') || lowerCol.includes('updated_at') || lowerCol === 'timestamp' || lowerCol.endsWith('_at')) {
                     dateColumns.add(col);
                     return;
@@ -383,16 +1072,19 @@
             });
         }
 
-        // Render rows helper function
         function renderTableRows(dataToRender) {
             const tableBody = document.getElementById('tableBody');
+            const rowCountDisplay = document.getElementById('rowCountDisplay');
             tableBody.innerHTML = '';
-            filteredTransactions = dataToRender; // Save reference for Excel export
+            filteredTransactions = dataToRender;
 
             if (!dataToRender || dataToRender.length === 0) {
                 tableBody.innerHTML = `<div class="grid-cell loading-text">No matching records found.</div>`;
+                rowCountDisplay.innerText = `Showing 0 of ${allTransactions.length} entries`;
                 return;
             }
+
+            rowCountDisplay.innerText = `Showing ${dataToRender.length} of ${allTransactions.length} entries`;
 
             dataToRender.forEach(rowItem => {
                 columns.forEach(col => {
@@ -404,8 +1096,47 @@
             });
         }
 
-        // Filter computation checking text, date ranges, or numeric ranges per column
+        // Filter transactions based on box break codes and auction order IDs matching transaction_no
+        function filterTransactionsBySelection() {
+            const targetCol = columns.find(col => col.toLowerCase() === 'transaction_no');
+
+            if (selectedBoxBreaks.size === 0 && selectedAuctions.size === 0) {
+                applyColumnFilters();
+                return;
+            }
+
+            if (!targetCol) {
+                console.warn('Column transaction_no not found for filtering.');
+                return;
+            }
+
+            // Collect active box break codes and all order IDs from active auctions
+            const activeBoxBreakCodes = [...selectedBoxBreaks];
+            let activeOrderIds = [];
+            Object.values(auctionOrderMap).forEach(ids => {
+                if (Array.isArray(ids)) {
+                    activeOrderIds.push(...ids);
+                }
+            });
+
+            const filteredData = allTransactions.filter(rowItem => {
+                const transNo = String(rowItem[targetCol] || '').toLowerCase();
+
+                const matchesBoxBreak = activeBoxBreakCodes.some(code => transNo.includes(String(code).toLowerCase()));
+                const matchesOrder = activeOrderIds.some(orderId => transNo.includes(String(orderId).toLowerCase()));
+
+                return matchesBoxBreak || matchesOrder;
+            });
+
+            renderTableRows(filteredData);
+        }
+
         function applyColumnFilters() {
+            if (selectedBoxBreaks.size > 0 || selectedAuctions.size > 0) {
+                filterTransactionsBySelection();
+                return;
+            }
+
             const textFilters = {};
             const dateFilters = {};
             const numericFilters = {};
@@ -415,10 +1146,7 @@
                     const input = document.getElementById(`search_${col}`);
                     if (input && input.value) {
                         const dates = input.value.split(" to ");
-                        dateFilters[col] = {
-                            from: dates[0] || '',
-                            to: dates[1] || dates[0]
-                        };
+                        dateFilters[col] = { from: dates[0] || '', to: dates[1] || dates[0] };
                     }
                 } else if (numericColumns.has(col)) {
                     const minInput = document.getElementById(`search_${col}_min`);
@@ -453,7 +1181,6 @@
             }
 
             const filteredData = allTransactions.filter(rowItem => {
-                // Validate Text Filters
                 for (const col in textFilters) {
                     const cellValue = rowItem[col];
                     const query = textFilters[col];
@@ -462,11 +1189,9 @@
                     }
                 }
 
-                // Validate Date Range Filters
                 for (const col in dateFilters) {
                     const cellValue = rowItem[col];
                     const { from, to } = dateFilters[col];
-
                     if (!cellValue) return false;
 
                     const cellDate = new Date(cellValue);
@@ -486,11 +1211,9 @@
                     }
                 }
 
-                // Validate Numeric Range Filters
                 for (const col in numericFilters) {
                     const cellValue = rowItem[col];
                     const { min, max } = numericFilters[col];
-
                     if (cellValue === null || cellValue === undefined || cellValue === '') return false;
                     const numVal = Number(cellValue);
                     if (isNaN(numVal)) return false;
@@ -505,165 +1228,188 @@
             renderTableRows(filteredData);
         }
 
-        // 2. Fetch Dynamic Table Data via POST Request using dynamic Base URL
         async function loadTableData() {
-            const tableHeaderRow = document.getElementById('tableHeaderRow');
             const tableBody = document.getElementById('tableBody');
-            const gridTable = document.getElementById('dynamicGridTable');
+            const rowCountDisplay = document.getElementById('rowCountDisplay');
             const selectedType = document.getElementById('transactionTypeSelect').value;
+            const cacheKey = CACHE_KEY_PREFIX + selectedType;
 
-            tableBody.innerHTML = `<div class="grid-cell loading-text">Loading data from server...</div>`;
+            tableBody.innerHTML = `
+                <div class="grid-cell loading-text">
+                    <div class="spinner-small"></div>
+                    <span>Loading data...</span>
+                </div>
+            `;
+            rowCountDisplay.innerText = 'Loading entries...';
+
+            const cachedData = sessionStorage.getItem(cacheKey);
+            if (cachedData) {
+                try {
+                    allTransactions = JSON.parse(cachedData);
+                    setTimeout(() => {
+                        processTableStructureAndRows();
+                    }, 50);
+                    return;
+                } catch (e) {
+                    console.error('Failed to parse cache:', e);
+                    sessionStorage.removeItem(cacheKey);
+                }
+            }
 
             try {
                 const apiTableUrl = `${apiBaseUrl}/GetPortalTransactions`;
 
                 const response = await fetch(apiTableUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: token,
-                        transaction_type: selectedType
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token, transaction_type: selectedType })
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch table data from server.');
+                    throw new Error('Failed to fetch data.');
                 }
 
                 const result = await response.json();
-                allTransactions = Array.isArray(result) ? result : (result.data || result.rows);
+                const rawData = Array.isArray(result) ? result : (result.data || result.rows);
 
-                if (!allTransactions || allTransactions.length === 0) {
-                    tableHeaderRow.innerHTML = '';
-                    gridTable.style.gridTemplateColumns = '1fr';
-                    tableBody.innerHTML = `<div class="grid-cell loading-text">No data available.</div>`;
-                    filteredTransactions = [];
-                    return;
-                }
+                allTransactions = rawData || [];
+                sessionStorage.setItem(cacheKey, JSON.stringify(allTransactions));
 
-                // Extract columns and classify them
-                columns = Object.keys(allTransactions[0]);
-                classifyColumns(allTransactions, columns);
-
-                gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
-
-                // Generate Dynamic Headers
-                tableHeaderRow.innerHTML = '';
-                columns.forEach(col => {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell';
-                    const formattedColName = col.replace(/_/g, ' ');
-
-                    if (dateColumns.has(col)) {
-                        cell.innerHTML = `
-                            <div class="header-content">
-                                <span>${formattedColName}</span>
-                                <div class="date-input-wrapper">
-                                    <input type="text" id="search_${col}" class="date-input" placeholder="Select date or range..." autocomplete="off">
-                                    <button type="button" id="clear_date_${col}" class="clear-date-btn" title="Clear date">&times;</button>
-                                </div>
-                            </div>
-                        `;
-                    } else if (numericColumns.has(col)) {
-                        cell.innerHTML = `
-                            <div class="header-content">
-                                <span>${formattedColName}</span>
-                                <div class="numeric-range-container">
-                                    <input type="number" id="search_${col}_min" class="numeric-range-input" placeholder="Min" autocomplete="off">
-                                    <input type="number" id="search_${col}_max" class="numeric-range-input" placeholder="Max" autocomplete="off">
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        cell.innerHTML = `
-                            <div class="header-content">
-                                <span>${formattedColName}</span>
-                                <input type="text" id="search_${col}" class="column-search-input" placeholder="Search..." autocomplete="off">
-                            </div>
-                        `;
-                    }
-
-                    tableHeaderRow.appendChild(cell);
-                });
-
-                // Attach event listeners and controls
-                columns.forEach(col => {
-                    if (dateColumns.has(col)) {
-                        const inputEl = document.getElementById(`search_${col}`);
-                        const clearBtnEl = document.getElementById(`clear_date_${col}`);
-                        inputEl.addEventListener('click', (e) => e.stopPropagation());
-
-                        calendarInstances[col] = flatpickr(inputEl, {
-                            mode: "range",
-                            dateFormat: "Y-m-d",
-                            onChange: function (selectedDates, dateStr) {
-                                clearBtnEl.style.display = dateStr ? 'block' : 'none';
-                                applyColumnFilters();
-                            }
-                        });
-
-                        clearBtnEl.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            calendarInstances[col].clear();
-                            inputEl.value = '';
-                            clearBtnEl.style.display = 'none';
-                            applyColumnFilters();
-                        });
-                    } else if (numericColumns.has(col)) {
-                        const minEl = document.getElementById(`search_${col}_min`);
-                        const maxEl = document.getElementById(`search_${col}_max`);
-
-                        minEl.addEventListener('input', applyColumnFilters);
-                        maxEl.addEventListener('input', applyColumnFilters);
-                        minEl.addEventListener('click', (e) => e.stopPropagation());
-                        maxEl.addEventListener('click', (e) => e.stopPropagation());
-                    } else {
-                        const inputEl = document.getElementById(`search_${col}`);
-                        inputEl.addEventListener('click', (e) => e.stopPropagation());
-                        inputEl.addEventListener('input', applyColumnFilters);
-                    }
-                });
-
-                // Initial Render of Rows
-                renderTableRows(allTransactions);
+                processTableStructureAndRows();
 
             } catch (error) {
                 console.error('Error loading table:', error);
                 tableBody.innerHTML = `<div class="grid-cell error-text">Could not load table data.</div>`;
+                rowCountDisplay.innerText = 'Error loading entries';
             }
         }
 
-        // Trigger table data load on page startup
+        function processTableStructureAndRows() {
+            const tableHeaderRow = document.getElementById('tableHeaderRow');
+            const tableBody = document.getElementById('tableBody');
+            const gridTable = document.getElementById('dynamicGridTable');
+            const rowCountDisplay = document.getElementById('rowCountDisplay');
+
+            if (!allTransactions || allTransactions.length === 0) {
+                tableHeaderRow.innerHTML = '';
+                gridTable.style.gridTemplateColumns = '1fr';
+                tableBody.innerHTML = `<div class="grid-cell loading-text">No data available.</div>`;
+                rowCountDisplay.innerText = 'Showing 0 of 0 entries';
+                filteredTransactions = [];
+                return;
+            }
+
+            columns = Object.keys(allTransactions[0]);
+            classifyColumns(allTransactions, columns);
+
+            gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
+
+            tableHeaderRow.innerHTML = '';
+            columns.forEach(col => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                const formattedColName = col.replace(/_/g, ' ');
+
+                if (dateColumns.has(col)) {
+                    cell.innerHTML = `
+                        <div class="header-content">
+                            <span>${formattedColName}</span>
+                            <div class="date-input-wrapper">
+                                <input type="text" id="search_${col}" class="date-input" placeholder="Select date..." autocomplete="off">
+                                <button type="button" id="clear_date_${col}" class="clear-date-btn" title="Clear date">&times;</button>
+                            </div>
+                        </div>
+                    `;
+                } else if (numericColumns.has(col)) {
+                    cell.innerHTML = `
+                        <div class="header-content">
+                            <span>${formattedColName}</span>
+                            <div class="numeric-range-container">
+                                <input type="number" id="search_${col}_min" class="numeric-range-input" placeholder="Min" autocomplete="off">
+                                <input type="number" id="search_${col}_max" class="numeric-range-input" placeholder="Max" autocomplete="off">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    cell.innerHTML = `
+                        <div class="header-content">
+                            <span>${formattedColName}</span>
+                            <input type="text" id="search_${col}" class="column-search-input" placeholder="Search..." autocomplete="off">
+                        </div>
+                    `;
+                }
+
+                tableHeaderRow.appendChild(cell);
+            });
+
+            columns.forEach(col => {
+                if (dateColumns.has(col)) {
+                    const inputEl = document.getElementById(`search_${col}`);
+                    const clearBtnEl = document.getElementById(`clear_date_${col}`);
+                    inputEl.addEventListener('click', (e) => e.stopPropagation());
+
+                    calendarInstances[col] = flatpickr(inputEl, {
+                        mode: "range",
+                        dateFormat: "Y-m-d",
+                        onChange: function (selectedDates, dateStr) {
+                            clearBtnEl.style.display = dateStr ? 'block' : 'none';
+                            applyColumnFilters();
+                        }
+                    });
+
+                    clearBtnEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        calendarInstances[col].clear();
+                        inputEl.value = '';
+                        clearBtnEl.style.display = 'none';
+                        applyColumnFilters();
+                    });
+                } else if (numericColumns.has(col)) {
+                    const minEl = document.getElementById(`search_${col}_min`);
+                    const maxEl = document.getElementById(`search_${col}_max`);
+
+                    minEl.addEventListener('input', applyColumnFilters);
+                    maxEl.addEventListener('input', applyColumnFilters);
+                    minEl.addEventListener('click', (e) => e.stopPropagation());
+                    maxEl.addEventListener('click', (e) => e.stopPropagation());
+                } else {
+                    const inputEl = document.getElementById(`search_${col}`);
+                    inputEl.addEventListener('click', (e) => e.stopPropagation());
+                    inputEl.addEventListener('input', applyColumnFilters);
+                }
+            });
+
+            renderTableRows(allTransactions);
+        }
+
         loadTableData();
 
-        // Reload data when transaction type changes
         document.getElementById('transactionTypeSelect').addEventListener('change', () => {
             loadTableData();
         });
 
-        // 3. Export to Excel Functionality
         document.getElementById('exportExcelBtn').addEventListener('click', () => {
             if (!filteredTransactions || filteredTransactions.length === 0) {
                 alert('No data available to export.');
                 return;
             }
 
-            // Create a worksheet from the filtered dataset
             const worksheet = XLSX.utils.json_to_sheet(filteredTransactions);
-
-            // Create a new workbook and append the worksheet
             const workbook = XLSX.utils.book_new();
             const selectedType = document.getElementById('transactionTypeSelect').value;
             XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
-
-            // Trigger file download
             XLSX.writeFile(workbook, `Transaction_Records_${selectedType}.xlsx`);
         });
 
-        // 4. Clear All Filters Functionality
         document.getElementById('clearSearchBtn').addEventListener('click', () => {
+            selectedBoxBreaks.clear();
+            selectedAuctions.clear();
+            auctionOrderMap = {};
+            document.querySelectorAll('.api-item-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            updateClearSelectionButton();
+
             columns.forEach(col => {
                 if (dateColumns.has(col)) {
                     const input = document.getElementById(`search_${col}`);
@@ -684,9 +1430,9 @@
             renderTableRows(allTransactions);
         });
 
-        // 5. Logout functionality (clears all session items including apiBaseUrl)
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.clear();
+            sessionStorage.clear();
             window.location.href = 'index.html';
         });
     </script>
