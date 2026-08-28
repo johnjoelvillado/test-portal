@@ -1021,7 +1021,12 @@
             filteredTransactions = dataToRender || [];
             tableResponsiveContainer.classList.add('loaded');
 
-            const totalReference = allTransactions.length;
+            const selectedType = document.getElementById('transactionTypeSelect')?.value || 'all';
+            const totalReference = selectedType === 'all'
+                ? allTransactions.length
+                : allTransactions.reduce((count, row) => {
+                    return count + (String(row.transaction_type || '').toLowerCase() === selectedType ? 1 : 0);
+                }, 0);
             const totalRows = filteredTransactions.length;
 
             if (totalRows === 0) {
@@ -1085,11 +1090,8 @@
 
             let activeFilterCount = 0;
 
-            // Transaction type is a table-level filter.
-            const transactionType = document.getElementById('transactionTypeSelect');
-            if (transactionType && transactionType.value !== 'all') {
-                activeFilterCount++;
-            }
+            // Transaction type is a dataset selector, NOT a table filter.
+            // It must not make the Clear Filters button appear or affect its count.
 
             // Column filters only. Card selections are intentionally ignored.
             columns.forEach(col => {
@@ -1304,6 +1306,11 @@
 
             columns = Object.keys(allTransactions[0]);
             classifyColumns(allTransactions, columns);
+
+            // transaction_type is still used by the transaction type selector,
+            // but should not be displayed as a table column.
+            columns = columns.filter(col => col.toLowerCase() !== 'transaction_type');
+
             gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
 
             tableHeaderRow.innerHTML = '';
@@ -1380,7 +1387,6 @@
         loadTableData();
 
         document.getElementById('transactionTypeSelect').addEventListener('change', () => {
-            updateTableFilterIndicator();
             showInlineStatus("Switching transactions...", true);
             scheduleTableFilter();
         });
@@ -1400,8 +1406,8 @@
             // IMPORTANT: this button only clears table filters.
             // Card selections and auction order selections are intentionally preserved.
 
-            const transactionType = document.getElementById('transactionTypeSelect');
-            if (transactionType) transactionType.value = 'all';
+            // Do NOT reset transactionTypeSelect here.
+            // Transaction type is a dataset selector, not a table filter.
 
             columns.forEach(col => {
                 if (dateColumns.has(col)) {
