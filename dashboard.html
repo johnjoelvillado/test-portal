@@ -1489,7 +1489,7 @@
             const hiddenColumns = new Set(['reference_code', 'transaction_type']);
             columns = columns.filter(col => !hiddenColumns.has(col.toLowerCase()));
 
-            gridTable.style.gridTemplateColumns = columns.map(() => '200px').join(' ');
+            gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(220px, max-content)').join(' ');
 
             tableHeaderRow.innerHTML = '';
             columns.forEach(col => {
