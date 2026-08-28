@@ -398,7 +398,6 @@
             transform: translateY(-1px);
         }
 
-        /* Active / Deselect state styling blend */
         .select-all-btn.is-active-deselect {
             background: linear-gradient(145deg, rgba(55, 46, 24, 0.98), rgba(35, 29, 14, 0.98));
             border: 2px solid var(--accent-gold);
@@ -507,6 +506,7 @@
         .table-responsive {
             width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             max-height: 78vh;
             display: none;
             border-radius: 12px;
@@ -533,6 +533,8 @@
             display: grid;
             content-visibility: auto;
             contain-intrinsic-size: auto 500px;
+            width: max-content;
+            min-width: 100%;
         }
 
         .grid-header {
@@ -718,6 +720,11 @@
             { label: 'Auctions', id: 'auction' }
         ];
 
+        const inMemoryCache = {
+            auctionOrders: {},
+            portalTransactions: null
+        };
+
         const apiResponseCache = {};
         const auctionOrdersCache = {};
         let selectedBoxBreaks = new Set();
@@ -767,14 +774,10 @@
 
         async function fetchAuctionOrdersApi(auctionId, token, apiBaseUrl) {
             if (auctionOrdersCache[auctionId]) return auctionOrdersCache[auctionId];
-            const sessionCacheKey = `auction_orders_${auctionId}`;
-            const cachedSession = sessionStorage.getItem(sessionCacheKey);
-            if (cachedSession) {
-                try {
-                    const parsed = JSON.parse(cachedSession);
-                    auctionOrdersCache[auctionId] = parsed;
-                    return parsed;
-                } catch (e) { sessionStorage.removeItem(sessionCacheKey); }
+
+            if (inMemoryCache.auctionOrders[auctionId]) {
+                auctionOrdersCache[auctionId] = inMemoryCache.auctionOrders[auctionId];
+                return inMemoryCache.auctionOrders[auctionId];
             }
 
             try {
@@ -785,11 +788,12 @@
                 });
                 if (!response.ok) throw new Error('Failed to fetch auction orders.');
                 const result = await response.json();
-                const rawList = Array.isArray(result) ? result : (result.data || result.rows || []);
-                const orderIds = rawList.map(item => item.order_id || item.id || item).filter(Boolean);
-                auctionOrdersCache[auctionId] = orderIds;
-                sessionStorage.setItem(sessionCacheKey, JSON.stringify(orderIds));
-                return orderIds;
+
+                const rawList = Array.isArray(result) ? result : (result.data || result.rows || result.orders || []);
+
+                auctionOrdersCache[auctionId] = rawList;
+                inMemoryCache.auctionOrders[auctionId] = rawList; // Save to in-memory variable
+                return rawList;
             } catch (err) {
                 return [];
             }
@@ -951,18 +955,23 @@
                                 });
                                 updateClearSelectionButton();
                                 updateSelectAllButtons();
-                                scheduleTableFilter();
 
+                                showInlineStatus("Fetching auction orders...", true);
                                 Promise.all(visibleCards.map(card => {
                                     const code = card.getAttribute('data-auction-code');
                                     const auctionId = card.getAttribute('data-auction-id');
-                                    if (!code || !auctionId || auctionOrderMap[code]) return Promise.resolve();
+                                    if (!code || !auctionId) return Promise.resolve();
+
                                     return fetchAuctionOrdersApi(auctionId, localStorage.getItem('token'), localStorage.getItem('apiBaseUrl'))
                                         .then(ids => {
-                                            if (selectedAuctions.has(code)) auctionOrderMap[code] = ids;
+                                            const rawOrders = Array.isArray(ids) ? ids : (ids.data || ids.rows || []);
+                                            auctionOrderMap[code] = rawOrders;
                                         });
                                 })).then(() => {
-                                    if (selectedAuctions.size > 0) scheduleTableFilter();
+                                    if (selectedAuctions.size > 0) {
+                                        hideInlineStatus();
+                                        scheduleTableFilter();
+                                    }
                                 });
                             });
                         }
@@ -1053,13 +1062,21 @@
                                         selectedAuctions.delete(code);
                                         delete auctionOrderMap[code];
                                         card.classList.remove('selected');
+                                        updateClearSelectionButton();
+                                        updateSelectAllButtons();
+                                        scheduleTableFilter();
                                     } else {
                                         selectedAuctions.add(code);
                                         card.classList.add('selected');
+                                        updateClearSelectionButton();
+                                        updateSelectAllButtons();
                                         if (auctionId) {
+                                            showInlineStatus("Fetching auction orders...", true);
                                             fetchAuctionOrdersApi(auctionId, localStorage.getItem('token'), localStorage.getItem('apiBaseUrl')).then(ids => {
                                                 if (selectedAuctions.has(code)) {
-                                                    auctionOrderMap[code] = ids;
+                                                    const rawOrders = Array.isArray(ids) ? ids : (ids.data || ids.rows || []);
+                                                    auctionOrderMap[code] = rawOrders;
+                                                    hideInlineStatus();
                                                     scheduleTableFilter();
                                                 }
                                             });
@@ -1078,10 +1095,10 @@
                                         selectedBoxBreakReferences.set(code, referenceId);
                                         card.classList.add('selected');
                                     }
+                                    updateClearSelectionButton();
+                                    updateSelectAllButtons();
+                                    scheduleTableFilter();
                                 }
-                                updateClearSelectionButton();
-                                updateSelectAllButtons();
-                                scheduleTableFilter();
                             });
                         });
                     } catch (err) {
@@ -1208,12 +1225,7 @@
             clearTimeout(pendingFilterTimer);
             pendingFilterTimer = setTimeout(() => {
                 pendingFilterTimer = null;
-
-                if (window.requestIdleCallback) {
-                    requestIdleCallback(() => applyColumnFilters(), { timeout: 250 });
-                } else {
-                    requestAnimationFrame(() => applyColumnFilters());
-                }
+                applyColumnFilters();
             }, 50);
         }
 
@@ -1270,47 +1282,65 @@
                 const filteredData = [];
                 const filteredLower = [];
 
-                const activeBoxBreakReferenceIds = [...selectedBoxBreakReferences.values()]
-                    .filter(id => id !== null && id !== undefined && String(id) !== '')
-                    .map(id => String(id));
+                const activeBoxBreakCodes = [];
+                const activeBoxBreakIds = [];
+                if (selectedBoxBreaks.size > 0) {
+                    for (const [box_break_code, box_break_id] of selectedBoxBreakReferences.entries()) {
+                        activeBoxBreakCodes.push(String(box_break_code).toLowerCase());
+                        activeBoxBreakIds.push(String(box_break_id));
+                    }
+                }
 
-                const targetCol = columns.find(col => col.toLowerCase() === 'transaction_no');
-                const activeBoxBreakCodes = [...selectedBoxBreaks].map(code => String(code).toLowerCase());
-                const activeOrderIds = Object.values(auctionOrderMap)
-                    .flatMap(ids => Array.isArray(ids) ? ids : [])
-                    .map(id => String(id).toLowerCase());
+                const activeOrderIds = [];
+                const activePaymentIds = [];
+                if (selectedAuctions.size > 0) {
+                    selectedAuctions.forEach(code => {
+                        const orders = auctionOrderMap[code];
+                        orders.forEach(item => {
+                            activeOrderIds.push(String(item.order_id).trim().toLowerCase());
+                            activePaymentIds.push(String(item.orders_payment_id));
+                        });
+                    });
+                }
 
                 for (let i = 0; i < baseData.length; i++) {
                     const row = baseData[i];
+                    const rowTransactionType = String(row.transaction_type || '').trim().toLowerCase();
+                    const transNo = String(row.transaction_no || '').trim().toLowerCase();
+                    const rowReferenceId = String(row.reference_id || '').trim().toLowerCase();
+                    const rowReferenceType = String(row.reference_type || '').trim().toLowerCase();
+                    const rowReferenceCode = String(row.reference_code || '').trim().toLowerCase();
+
                     let matches = false;
 
                     if (selectedBoxBreaks.size > 0) {
-                        const rowTransactionType = String(row.transaction_type || '').trim().toLowerCase();
-                        const rowReferenceType = String(row.reference_type || '').trim();
-                        const rowBoxBreakId = String(row.box_break_id || row.reference_id || '').trim();
-                        const rowReferenceCode = String(row.reference_code || '').trim().toLowerCase();
-                        const transNo = targetCol ? String(row[targetCol] || '').toLowerCase() : '';
-
                         if (rowTransactionType === 'xure_credits') {
-                            // Must have reference_type equal to 'Box Break' AND reference_id/box_break_id matching
-                            const matchesType = rowReferenceType === 'Box Break';
-                            const matchesId = rowBoxBreakId && activeBoxBreakReferenceIds.includes(rowBoxBreakId);
+                            const matchesType = rowReferenceType === 'box break';
+                            const matchesId = activeBoxBreakIds.includes(rowReferenceId);
                             matches = matchesType && matchesId;
                         } else if (rowTransactionType === 'wallet') {
-                            // Must match via transaction_no or reference code
-                            const matchesCode = activeBoxBreakCodes.some(code => transNo.includes(code) || rowReferenceCode.includes(code));
+                            const matchesCode = activeBoxBreakCodes.some(box_break_code => transNo.includes(box_break_code));
                             matches = matchesCode;
                         } else {
-                            // Fallback for any other transaction types if applicable
-                            const matchesReferenceId = rowBoxBreakId && activeBoxBreakReferenceIds.includes(rowBoxBreakId);
-                            const matchesCode = activeBoxBreakCodes.some(code => transNo.includes(code) || rowReferenceCode.includes(code));
+                            const matchesReferenceId = rowBoxBreakId && activeBoxBreakIds.includes(rowReferenceId);
+                            const matchesCode = activeBoxBreakCodes.some(box_break_code => transNo.includes(box_break_code));
                             matches = matchesReferenceId || matchesCode;
                         }
                     }
 
-                    if (!matches && selectedAuctions.size > 0 && targetCol) {
-                        const transNo = String(row[targetCol] || '').toLowerCase();
-                        matches = activeOrderIds.some(orderId => transNo.includes(orderId));
+                    if (!matches && selectedAuctions.size > 0) {
+                        if (rowTransactionType === 'wallet') {
+                            const matchesCode = activeOrderIds.some(orderId => transNo.includes(orderId));
+                            matches = matchesCode;
+                        } else if (rowTransactionType === 'xure_credits') {
+                            const matchesType = rowReferenceCode === 'orders_payments';
+                            const matchesId = activePaymentIds.includes(rowReferenceId);
+                            matches = matchesType && matchesId;
+                        } else {
+                            const matchesOrder = activeOrderIds.some(orderId => transNo.includes(orderId));
+                            const matchesPayment = (rowReferenceCode === 'orders_payment') && activePaymentIds.includes(rowReferenceId);
+                            matches = matchesOrder || matchesPayment;
+                        }
                     }
 
                     if (matches) {
@@ -1394,19 +1424,15 @@
         async function loadTableData() {
             const rowCountDisplay = document.getElementById('rowCountDisplay');
             const tableResponsiveContainer = document.getElementById('tableResponsiveContainer');
-            const cacheKey = 'portal_trans_cache_all_combined';
 
             tableResponsiveContainer.classList.remove('loaded');
             showInlineStatus("Loading data from server...", true);
 
-            const cachedData = sessionStorage.getItem(cacheKey);
-            if (cachedData) {
-                try {
-                    allTransactions = JSON.parse(cachedData);
-                    buildLowerCaseCache();
-                    setTimeout(() => processTableStructureAndRows(), 10);
-                    return;
-                } catch (e) { sessionStorage.removeItem(cacheKey); }
+            if (inMemoryCache.portalTransactions) {
+                allTransactions = inMemoryCache.portalTransactions;
+                buildLowerCaseCache();
+                setTimeout(() => processTableStructureAndRows(), 10);
+                return;
             }
 
             try {
@@ -1418,7 +1444,9 @@
                 if (!response.ok) throw new Error('Failed to fetch data.');
                 const result = await response.json();
                 allTransactions = Array.isArray(result) ? result : (result.data || result.rows || []);
-                sessionStorage.setItem(cacheKey, JSON.stringify(allTransactions));
+
+                inMemoryCache.portalTransactions = allTransactions;
+
                 buildLowerCaseCache();
                 processTableStructureAndRows();
             } catch (error) {
@@ -1455,11 +1483,13 @@
             }
 
             columns = Object.keys(allTransactions[0]);
+
             classifyColumns(allTransactions, columns);
 
-            columns = columns.filter(col => col.toLowerCase() !== 'transaction_type');
+            const hiddenColumns = new Set(['reference_code', 'transaction_type']);
+            columns = columns.filter(col => !hiddenColumns.has(col.toLowerCase()));
 
-            gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
+            gridTable.style.gridTemplateColumns = columns.map(() => '200px').join(' ');
 
             tableHeaderRow.innerHTML = '';
             columns.forEach(col => {
@@ -1502,7 +1532,7 @@
                 } else if (numericColumns.has(col)) {
                     ['min', 'max'].forEach(type => {
                         const el = document.getElementById(`search_${col}_${type}`);
-                        el.addEventListener('input', () => requestAnimationFrame(() => applyColumnFilters()));
+                        el.addEventListener('input', () => applyColumnFilters());
                         el.addEventListener('click', (e) => e.stopPropagation());
                     });
                 } else {
@@ -1510,20 +1540,8 @@
                     inputEl.addEventListener('click', (e) => e.stopPropagation());
                     inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
 
-                    let debounceTimer;
-                    inputEl.addEventListener('input', (e) => {
-                        const selectionStart = e.target.selectionStart;
-                        const selectionEnd = e.target.selectionEnd;
-
-                        clearTimeout(debounceTimer);
-                        debounceTimer = setTimeout(() => {
-                            applyColumnFilters();
-                            const activeField = document.getElementById(`search_${col}`);
-                            if (activeField && document.activeElement !== activeField) {
-                                activeField.focus();
-                                activeField.setSelectionRange(selectionStart, selectionEnd);
-                            }
-                        }, 100);
+                    inputEl.addEventListener('input', () => {
+                        applyColumnFilters();
                     });
                 }
             });
@@ -1540,7 +1558,7 @@
         });
 
         document.getElementById('exportExcelBtn').addEventListener('click', () => {
-            if (!filteredTransactions || filteredTransactions.length === 0) {
+            if (!filteredTransactions || !filteredTransactions.length) {
                 alert('No data available to export.');
                 return;
             }
@@ -1570,7 +1588,8 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.clear();
-            sessionStorage.clear();
+            inMemoryCache.portalTransactions = null;
+            inMemoryCache.auctionOrders = {};
             window.location.href = 'index.html';
         });
     </script>
