@@ -378,6 +378,33 @@
             flex-wrap: wrap;
         }
 
+        .select-all-btn {
+            background: linear-gradient(145deg, rgba(42, 35, 18, 0.98), rgba(26, 22, 10, 0.98));
+            border: 2px solid rgba(212, 175, 55, 0.45);
+            color: var(--accent-gold);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .select-all-btn:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Active / Deselect state styling blend */
+        .select-all-btn.is-active-deselect {
+            background: linear-gradient(145deg, rgba(55, 46, 24, 0.98), rgba(35, 29, 14, 0.98));
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2);
+        }
+
         .title-group {
             display: flex;
             align-items: center;
@@ -694,6 +721,7 @@
         const apiResponseCache = {};
         const auctionOrdersCache = {};
         let selectedBoxBreaks = new Set();
+        let selectedBoxBreakReferences = new Map();
         let selectedAuctions = new Set();
         let auctionOrderMap = {};
         let lowerCaseTransactionsCache = [];
@@ -777,6 +805,39 @@
             document.querySelectorAll('.header-action-text').forEach(b => b.classList.remove('active-nav'));
         });
 
+        function updateSelectAllButtons() {
+            const boxBtn = document.getElementById('selectAllBoxBreakBtn');
+            const auctionBtn = document.getElementById('selectAllAuctionBtn');
+            const activeNav = document.querySelector('.header-action-text.active-nav')?.id || '';
+
+            const boxCards = [...document.querySelectorAll('.api-item-card[data-box-break-code]')].filter(card => card.style.display !== 'none');
+            const auctionCards = [...document.querySelectorAll('.api-item-card[data-auction-code]')].filter(card => card.style.display !== 'none');
+
+            if (boxBtn) {
+                boxBtn.style.display = activeNav === 'nav_btn_box_break' && boxCards.length ? 'inline-block' : 'none';
+                const allSelected = boxCards.length > 0 && boxCards.every(card => selectedBoxBreaks.has(card.getAttribute('data-box-break-code')));
+
+                boxBtn.innerText = allSelected ? 'Deselect All Box Breaks' : 'Select All Box Breaks';
+                if (allSelected) {
+                    boxBtn.classList.add('is-active-deselect');
+                } else {
+                    boxBtn.classList.remove('is-active-deselect');
+                }
+            }
+
+            if (auctionBtn) {
+                auctionBtn.style.display = activeNav === 'nav_btn_auction' && auctionCards.length ? 'inline-block' : 'none';
+                const allSelected = auctionCards.length > 0 && auctionCards.every(card => selectedAuctions.has(card.getAttribute('data-auction-code')));
+
+                auctionBtn.innerText = allSelected ? 'Deselect All Auctions' : 'Select All Auctions';
+                if (allSelected) {
+                    auctionBtn.classList.add('is-active-deselect');
+                } else {
+                    auctionBtn.classList.remove('is-active-deselect');
+                }
+            }
+        }
+
         async function renderHeaderNav() {
             const container = document.getElementById('headerNavContainer');
             container.innerHTML = '';
@@ -791,6 +852,7 @@
                     btn.classList.add('active-nav');
                     apiExternalCard.classList.add('show');
                     document.getElementById('apiExternalTitleText').innerText = item.label;
+                    updateSelectAllButtons();
 
                     const cardsContainer = document.getElementById('apiExternalCardsContainer');
                     cardsContainer.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><div class="spinner-small" style="margin: 0 auto 10px auto;"></div><span>Fetching data...</span></div>`;
@@ -816,6 +878,8 @@
                                     <input type="text" id="universalApiSearch" class="column-search-input" placeholder="Search..." autocomplete="off" style="width: 180px; background: rgba(28, 23, 14, 0.95); color: #fff; border: 1px solid rgba(212, 175, 55, 0.4); padding: 6px 28px 6px 12px; font-size: 13px; border-radius: 8px;">
                                     <button type="button" id="clearApiSearchBtn" style="position: absolute; right: 8px; background: none; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 0; display: none;" title="Clear search">&times;</button>
                                 </div>
+                                <button class="select-all-btn" id="selectAllBoxBreakBtn" style="display: none;">Select All Box Breaks</button>
+                                <button class="select-all-btn" id="selectAllAuctionBtn" style="display: none;">Select All Auctions</button>
                                 <button class="clear-selection-btn" id="clearSelectionBtn" style="display: none;">Clear Selection (0)</button>
                                 <span id="apiSearchCountIndicator" style="font-size: 13px; color: var(--text-muted); white-space: nowrap;"></span>
                             `;
@@ -823,6 +887,7 @@
 
                             document.getElementById('clearSelectionBtn').addEventListener('click', () => {
                                 selectedBoxBreaks.clear();
+                                selectedBoxBreakReferences.clear();
                                 selectedAuctions.clear();
                                 auctionOrderMap = {};
 
@@ -830,10 +895,79 @@
                                     card.classList.remove('selected');
                                 });
                                 updateClearSelectionButton();
+                                updateSelectAllButtons();
 
                                 scheduleTableFilter();
                             });
+
+                            document.getElementById('selectAllBoxBreakBtn').addEventListener('click', () => {
+                                const visibleCards = [...document.querySelectorAll('.api-item-card[data-box-break-code]')].filter(card => card.style.display !== 'none');
+                                const allVisibleSelected = visibleCards.length > 0 && visibleCards.every(card => selectedBoxBreaks.has(card.getAttribute('data-box-break-code')));
+
+                                if (allVisibleSelected) {
+                                    visibleCards.forEach(card => {
+                                        const code = card.getAttribute('data-box-break-code');
+                                        selectedBoxBreaks.delete(code);
+                                        selectedBoxBreakReferences.delete(code);
+                                        card.classList.remove('selected');
+                                    });
+                                } else {
+                                    visibleCards.forEach(card => {
+                                        const code = card.getAttribute('data-box-break-code');
+                                        const referenceId = card.getAttribute('data-reference-id');
+                                        if (!code) return;
+                                        selectedBoxBreaks.add(code);
+                                        selectedBoxBreakReferences.set(code, referenceId);
+                                        card.classList.add('selected');
+                                    });
+                                }
+                                updateClearSelectionButton();
+                                updateSelectAllButtons();
+                                scheduleTableFilter();
+                            });
+
+                            document.getElementById('selectAllAuctionBtn').addEventListener('click', () => {
+                                const visibleCards = [...document.querySelectorAll('.api-item-card[data-auction-code]')].filter(card => card.style.display !== 'none');
+                                const allVisibleSelected = visibleCards.length > 0 && visibleCards.every(card => selectedAuctions.has(card.getAttribute('data-auction-code')));
+
+                                if (allVisibleSelected) {
+                                    visibleCards.forEach(card => {
+                                        const code = card.getAttribute('data-auction-code');
+                                        selectedAuctions.delete(code);
+                                        delete auctionOrderMap[code];
+                                        card.classList.remove('selected');
+                                    });
+                                    updateClearSelectionButton();
+                                    updateSelectAllButtons();
+                                    scheduleTableFilter();
+                                    return;
+                                }
+
+                                visibleCards.forEach(card => {
+                                    const code = card.getAttribute('data-auction-code');
+                                    if (!code) return;
+                                    selectedAuctions.add(code);
+                                    card.classList.add('selected');
+                                });
+                                updateClearSelectionButton();
+                                updateSelectAllButtons();
+                                scheduleTableFilter();
+
+                                Promise.all(visibleCards.map(card => {
+                                    const code = card.getAttribute('data-auction-code');
+                                    const auctionId = card.getAttribute('data-auction-id');
+                                    if (!code || !auctionId || auctionOrderMap[code]) return Promise.resolve();
+                                    return fetchAuctionOrdersApi(auctionId, localStorage.getItem('token'), localStorage.getItem('apiBaseUrl'))
+                                        .then(ids => {
+                                            if (selectedAuctions.has(code)) auctionOrderMap[code] = ids;
+                                        });
+                                })).then(() => {
+                                    if (selectedAuctions.size > 0) scheduleTableFilter();
+                                });
+                            });
                         }
+
+                        updateSelectAllButtons();
 
                         const totalCount = resultList.length;
                         const countIndicator = document.getElementById('apiSearchCountIndicator');
@@ -856,7 +990,7 @@
 
                             if (item.id === 'box_break') {
                                 const code = entry.box_break_code || '';
-                                htmlContent += `<div class="api-item-card ${selectedBoxBreaks.has(code) ? 'selected' : ''}" data-box-break-code="${code}" data-search-blob="${searchBlob}"><h4 class="api-card-title" title="${title}">${title}</h4><div>${footerHtml}</div></div>`;
+                                htmlContent += `<div class="api-item-card ${selectedBoxBreaks.has(code) ? 'selected' : ''}" data-box-break-code="${code}" data-reference-id="${entry.reference_id || entry.box_break_id || ''}" data-search-blob="${searchBlob}"><h4 class="api-card-title" title="${title}">${title}</h4><div>${footerHtml}</div></div>`;
                             } else {
                                 const code = entry.auction_code || '';
                                 const auctionId = entry.auction_id || entry.id || '';
@@ -868,6 +1002,7 @@
 
                         cardsContainer.innerHTML = htmlContent;
                         updateClearSelectionButton();
+                        updateSelectAllButtons();
 
                         const universalInput = document.getElementById('universalApiSearch');
                         const clearSearchBtn = document.getElementById('clearApiSearchBtn');
@@ -891,6 +1026,7 @@
                             } else {
                                 noRecordsEl.style.display = 'none';
                             }
+                            updateSelectAllButtons();
                         }
 
                         universalInput.addEventListener('input', (e) => {
@@ -908,7 +1044,6 @@
 
                         document.querySelectorAll('.api-item-card').forEach(card => {
                             card.addEventListener('click', () => {
-                                // 1. Instant Class Toggle & Badge Update ONLY (Zero Main-Thread Blocking)
                                 const isAuction = item.id === 'auction';
                                 if (isAuction) {
                                     const code = card.getAttribute('data-auction-code');
@@ -923,7 +1058,6 @@
                                         card.classList.add('selected');
                                         if (auctionId) {
                                             fetchAuctionOrdersApi(auctionId, localStorage.getItem('token'), localStorage.getItem('apiBaseUrl')).then(ids => {
-                                                // Do not restore order IDs after the card was deselected.
                                                 if (selectedAuctions.has(code)) {
                                                     auctionOrderMap[code] = ids;
                                                     scheduleTableFilter();
@@ -933,18 +1067,20 @@
                                     }
                                 } else {
                                     const code = card.getAttribute('data-box-break-code');
+                                    const referenceId = card.getAttribute('data-reference-id');
                                     if (!code) return;
                                     if (selectedBoxBreaks.has(code)) {
                                         selectedBoxBreaks.delete(code);
+                                        selectedBoxBreakReferences.delete(code);
                                         card.classList.remove('selected');
                                     } else {
                                         selectedBoxBreaks.add(code);
+                                        selectedBoxBreakReferences.set(code, referenceId);
                                         card.classList.add('selected');
                                     }
                                 }
                                 updateClearSelectionButton();
-
-                                // Table filtering is detached from the card UI.
+                                updateSelectAllButtons();
                                 scheduleTableFilter();
                             });
                         });
@@ -1006,8 +1142,6 @@
             });
         }
 
-        // Table rendering is detached from card interaction.
-        // Render in batches so thousands of rows never monopolize the main thread.
         let tableRenderVersion = 0;
         let pendingFilterTimer = null;
 
@@ -1070,7 +1204,6 @@
             requestAnimationFrame(renderBatch);
         }
 
-        // Card selection is instant. Table filtering runs independently.
         function scheduleTableFilter() {
             clearTimeout(pendingFilterTimer);
             pendingFilterTimer = setTimeout(() => {
@@ -1090,10 +1223,6 @@
 
             let activeFilterCount = 0;
 
-            // Transaction type is a dataset selector, NOT a table filter.
-            // It must not make the Clear Filters button appear or affect its count.
-
-            // Column filters only. Card selections are intentionally ignored.
             columns.forEach(col => {
                 if (dateColumns.has(col)) {
                     const input = document.getElementById(`search_${col}`);
@@ -1138,39 +1267,60 @@
             }
 
             if (selectedBoxBreaks.size > 0 || selectedAuctions.size > 0) {
+                const filteredData = [];
+                const filteredLower = [];
+
+                const activeBoxBreakReferenceIds = [...selectedBoxBreakReferences.values()]
+                    .filter(id => id !== null && id !== undefined && String(id) !== '')
+                    .map(id => String(id));
+
                 const targetCol = columns.find(col => col.toLowerCase() === 'transaction_no');
-                if (targetCol) {
-                    const activeBoxBreakCodes = [...selectedBoxBreaks].map(code => String(code).toLowerCase());
-                    const activeOrderIds = Object.values(auctionOrderMap)
-                        .flatMap(ids => Array.isArray(ids) ? ids : [])
-                        .map(id => String(id).toLowerCase());
+                const activeBoxBreakCodes = [...selectedBoxBreaks].map(code => String(code).toLowerCase());
+                const activeOrderIds = Object.values(auctionOrderMap)
+                    .flatMap(ids => Array.isArray(ids) ? ids : [])
+                    .map(id => String(id).toLowerCase());
 
-                    const filteredIndices = [];
-                    for (let i = 0; i < baseData.length; i++) {
-                        const transNo = String(baseData[i][targetCol] || '').toLowerCase();
-                        let matches = false;
+                for (let i = 0; i < baseData.length; i++) {
+                    const row = baseData[i];
+                    let matches = false;
 
-                        for (let j = 0; j < activeBoxBreakCodes.length; j++) {
-                            if (transNo.includes(activeBoxBreakCodes[j])) {
-                                matches = true;
-                                break;
-                            }
+                    if (selectedBoxBreaks.size > 0) {
+                        const rowTransactionType = String(row.transaction_type || '').trim().toLowerCase();
+                        const rowReferenceType = String(row.reference_type || '').trim();
+                        const rowBoxBreakId = String(row.box_break_id || row.reference_id || '').trim();
+                        const rowReferenceCode = String(row.reference_code || '').trim().toLowerCase();
+                        const transNo = targetCol ? String(row[targetCol] || '').toLowerCase() : '';
+
+                        if (rowTransactionType === 'xure_credits') {
+                            // Must have reference_type equal to 'Box Break' AND reference_id/box_break_id matching
+                            const matchesType = rowReferenceType === 'Box Break';
+                            const matchesId = rowBoxBreakId && activeBoxBreakReferenceIds.includes(rowBoxBreakId);
+                            matches = matchesType && matchesId;
+                        } else if (rowTransactionType === 'wallet') {
+                            // Must match via transaction_no or reference code
+                            const matchesCode = activeBoxBreakCodes.some(code => transNo.includes(code) || rowReferenceCode.includes(code));
+                            matches = matchesCode;
+                        } else {
+                            // Fallback for any other transaction types if applicable
+                            const matchesReferenceId = rowBoxBreakId && activeBoxBreakReferenceIds.includes(rowBoxBreakId);
+                            const matchesCode = activeBoxBreakCodes.some(code => transNo.includes(code) || rowReferenceCode.includes(code));
+                            matches = matchesReferenceId || matchesCode;
                         }
-
-                        if (!matches) {
-                            for (let j = 0; j < activeOrderIds.length; j++) {
-                                if (transNo.includes(activeOrderIds[j])) {
-                                    matches = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (matches) filteredIndices.push(i);
                     }
-                    baseData = filteredIndices.map(i => baseData[i]);
-                    baseLowerCaseData = filteredIndices.map(i => baseLowerCaseData[i]);
+
+                    if (!matches && selectedAuctions.size > 0 && targetCol) {
+                        const transNo = String(row[targetCol] || '').toLowerCase();
+                        matches = activeOrderIds.some(orderId => transNo.includes(orderId));
+                    }
+
+                    if (matches) {
+                        filteredData.push(row);
+                        filteredLower.push(lowerCaseTransactionsCache[allTransactions.indexOf(row)] || {});
+                    }
                 }
+
+                baseData = filteredData;
+                baseLowerCaseData = filteredLower;
             }
 
             const textFilters = {};
@@ -1307,8 +1457,6 @@
             columns = Object.keys(allTransactions[0]);
             classifyColumns(allTransactions, columns);
 
-            // transaction_type is still used by the transaction type selector,
-            // but should not be displayed as a table column.
             columns = columns.filter(col => col.toLowerCase() !== 'transaction_type');
 
             gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
@@ -1403,12 +1551,6 @@
         });
 
         document.getElementById('clearSearchBtn').addEventListener('click', () => {
-            // IMPORTANT: this button only clears table filters.
-            // Card selections and auction order selections are intentionally preserved.
-
-            // Do NOT reset transactionTypeSelect here.
-            // Transaction type is a dataset selector, not a table filter.
-
             columns.forEach(col => {
                 if (dateColumns.has(col)) {
                     document.getElementById(`search_${col}`).value = '';
