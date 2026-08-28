@@ -13,7 +13,6 @@
     <style>
         :root {
             --bg-color: #0b0a07;
-            /* Container background transparency set to 0.10 to reveal the background logo */
             --card-bg: linear-gradient(145deg, rgba(29, 24, 13, 0.10) 0%, rgba(17, 16, 11, 0.10) 100%);
             --border-color: rgba(212, 175, 55, 0.4);
             --text-main: #ffffff;
@@ -42,7 +41,6 @@
             position: relative;
         }
 
-        /* Watermark matched from sign-in page */
         .bg-watermark {
             position: fixed;
             top: 58%;
@@ -55,7 +53,6 @@
             pointer-events: none;
         }
 
-        /* Subtle dark gold ambient glow layer */
         body::after {
             content: '';
             position: absolute;
@@ -70,7 +67,6 @@
             pointer-events: none;
         }
 
-        /* Top Header Bar */
         .header-bar {
             position: relative;
             z-index: 10;
@@ -124,20 +120,11 @@
             transform: translateY(-1px);
         }
 
-        .header-action-text:hover::before {
-            bottom: -8px;
-            width: 125%;
-            height: 10px;
-            background: radial-gradient(ellipse at center, rgba(212, 175, 55, 1) 0%, rgba(212, 175, 55, 0.45) 60%, rgba(212, 175, 55, 0) 90%);
-            filter: blur(6px);
-        }
-
         .header-action-text.active-nav {
             color: #fff;
             text-shadow: 0 2px 12px rgba(255, 255, 255, 0.9);
         }
 
-        /* Profile Dropdown Container */
         .profile-dropdown-container {
             position: relative;
         }
@@ -155,7 +142,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             user-select: none;
-            transition: border-color 0.2s ease;
         }
 
         .profile-widget:hover {
@@ -181,7 +167,6 @@
         .dropdown-arrow {
             font-size: 10px;
             color: var(--accent-gold);
-            transition: transform 0.2s ease;
         }
 
         .dropdown-menu {
@@ -200,23 +185,10 @@
             flex-direction: column;
             z-index: 20;
             overflow: hidden;
-            animation: fadeIn 0.15s ease-out forwards;
         }
 
         .dropdown-menu.show {
             display: flex;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-4px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .logout-option {
@@ -232,14 +204,12 @@
             align-items: center;
             gap: 8px;
             width: 100%;
-            transition: background 0.15s ease;
         }
 
         .logout-option:hover {
             background: rgba(239, 68, 68, 0.1);
         }
 
-        /* Center Dashboard Content Area */
         .main-container {
             position: relative;
             z-index: 3;
@@ -254,7 +224,6 @@
             gap: 25px;
         }
 
-        /* HIGHLY TRANSPARENT PARENT CARDS */
         .api-external-card,
         .card {
             background: var(--card-bg);
@@ -272,7 +241,6 @@
 
         .api-external-card {
             display: none;
-            animation: fadeIn 0.2s ease-out forwards;
         }
 
         .api-external-card.show {
@@ -292,7 +260,8 @@
         .api-external-title-group {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .api-external-title {
@@ -303,27 +272,24 @@
         }
 
         .clear-selection-btn {
-            background: linear-gradient(135deg, rgba(55, 52, 47, 0.95), rgba(38, 36, 32, 0.95));
-            border: 1px solid rgba(163, 158, 142, 0.45);
-            color: #e5e2d9;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
+            background: linear-gradient(145deg, rgba(42, 35, 18, 0.98), rgba(26, 22, 10, 0.98));
+            border: 2px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             display: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
         }
 
         .clear-selection-btn:hover {
-            border-color: rgba(212, 175, 55, 0.8);
-            background: linear-gradient(135deg, rgba(70, 66, 60, 0.95), rgba(50, 47, 42, 0.95));
-            color: #ffffff;
-            transform: translateY(-1px);
+            background: linear-gradient(145deg, rgba(55, 46, 24, 0.98), rgba(35, 29, 14, 0.98));
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6), inset 0 0 16px rgba(212, 175, 55, 0.3);
         }
 
-        /* GRAYER & SHARPER CLOSE BUTTON WITH CHARACTER */
         .api-external-close-btn {
             position: absolute;
             top: 20px;
@@ -340,15 +306,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s ease;
             z-index: 10;
-        }
-
-        .api-external-close-btn:hover {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(185, 28, 28, 0.4));
-            color: #ffffff;
-            border-color: rgba(248, 113, 113, 0.8);
-            transform: scale(1.08);
         }
 
         .api-cards-grid {
@@ -360,20 +318,6 @@
             box-sizing: border-box;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-gold) rgba(255, 255, 255, 0.05);
-        }
-
-        .api-cards-grid::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .api-cards-grid::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-        }
-
-        .api-cards-grid::-webkit-scrollbar-thumb {
-            background: var(--accent-gold);
-            border-radius: 4px;
         }
 
         .api-item-card {
@@ -388,24 +332,19 @@
             flex-direction: column;
             justify-content: space-between;
             gap: 15px;
-            box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
-            transition: all 0.25s ease;
             cursor: pointer;
             position: relative;
+            transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
         }
 
         .api-item-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(212, 175, 55, 0.8);
-            box-shadow: 0 12px 28px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
         }
 
-        /* Highly noticeable selection styling without label check */
         .api-item-card.selected {
             background: linear-gradient(145deg, rgba(42, 35, 18, 0.98), rgba(26, 22, 10, 0.98));
             border: 2px solid var(--accent-gold);
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 12px rgba(212, 175, 55, 0.2);
-            transform: translateY(-2px);
         }
 
         .api-card-title {
@@ -421,13 +360,6 @@
             text-overflow: ellipsis;
         }
 
-        .api-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-
         .api-card-label-muted {
             color: var(--text-muted);
         }
@@ -437,7 +369,6 @@
             font-weight: 600;
         }
 
-        /* Main Transactions Card Setup */
         .card-header-flex {
             display: flex;
             justify-content: space-between;
@@ -456,6 +387,13 @@
         .action-group {
             display: flex;
             gap: 12px;
+            align-items: center;
+        }
+
+        .transaction-type-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
         }
 
         .transaction-type-select {
@@ -471,15 +409,29 @@
             cursor: pointer;
             appearance: none;
             -webkit-appearance: none;
-            -moz-appearance: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s ease;
         }
 
         .transaction-type-select option {
             background: #11100b;
             color: var(--text-main);
             font-size: 1rem;
+        }
+
+        .inline-status-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 8px 14px;
+            border-radius: 10px;
+        }
+
+        .inline-status-indicator.show {
+            display: inline-flex;
         }
 
         .clear-btn,
@@ -489,7 +441,6 @@
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 600;
-            transition: all 0.2s ease;
             outline: none;
         }
 
@@ -497,13 +448,24 @@
             background: linear-gradient(135deg, rgba(55, 52, 47, 0.95), rgba(38, 36, 32, 0.95));
             color: #e5e2d9;
             border: 1px solid rgba(163, 158, 142, 0.45);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+            transition: all 0.2s ease;
         }
 
-        .clear-btn:hover {
-            border-color: rgba(212, 175, 55, 0.8);
-            background: linear-gradient(135deg, rgba(70, 66, 60, 0.95), rgba(50, 47, 42, 0.95));
-            color: #ffffff;
+        .clear-btn.no-filters {
+            display: none;
+        }
+
+        .clear-btn.has-filters {
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(55, 45, 20, 0.95));
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.28), inset 0 0 10px rgba(212, 175, 55, 0.08);
+        }
+
+        .clear-btn.has-filters:hover {
+            color: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 22px rgba(212, 175, 55, 0.45), inset 0 0 12px rgba(212, 175, 55, 0.12);
             transform: translateY(-1px);
         }
 
@@ -511,18 +473,21 @@
             background: var(--success-color);
             color: white;
             border: none;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
         }
 
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             max-height: 78vh;
-            border: 1px solid #cbd5e1;
+            display: none;
             border-radius: 12px;
-            background: #ffffff;
-            color: #0f172a;
             position: relative;
+        }
+
+        .table-responsive.loaded {
+            display: block;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
         }
 
         .table-footer-info {
@@ -537,6 +502,8 @@
 
         .grid-table {
             display: grid;
+            content-visibility: auto;
+            contain-intrinsic-size: auto 500px;
         }
 
         .grid-header {
@@ -619,27 +586,11 @@
             display: none;
         }
 
-        .loading-text,
-        .error-text {
-            text-align: center;
-            padding: 40px;
-            color: #64748b;
-            white-space: normal;
-            grid-column: 1 / -1;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-weight: 500;
-        }
-
         .spinner-small {
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(212, 175, 55, 0.2);
-            border-top: 3px solid var(--accent-gold);
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-top: 2px solid var(--accent-gold);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -657,10 +608,8 @@
 </head>
 
 <body>
-    <!-- Background Watermark Image matching Sign In -->
     <img class="bg-watermark" src="https://xuredeal.com/X%20Gold.svg" alt="Xure Watermark">
 
-    <!-- Top Header Bar -->
     <header class="header-bar">
         <div class="header-left-group" id="headerNavContainer"></div>
 
@@ -681,17 +630,12 @@
         </div>
     </header>
 
-    <!-- Center Dashboard Content Area -->
     <div class="main-container">
-
-        <!-- SEPARATE API CARD CONTAINER -->
         <div class="api-external-card" id="apiExternalCard">
-            <!-- Close button positioned at the top-right corner -->
             <button class="api-external-close-btn" id="apiExternalCloseBtn" title="Close">&times;</button>
             <div class="api-external-header">
                 <div class="api-external-title-group">
                     <h3 class="api-external-title" id="apiExternalTitleText">Records</h3>
-                    <button class="clear-selection-btn" id="clearSelectionBtn">Clear Selection (0)</button>
                 </div>
             </div>
             <div id="apiExternalCardsContainer">
@@ -702,41 +646,40 @@
             </div>
         </div>
 
-        <!-- MAIN TRANSACTIONS CARD CONTAINER -->
         <div class="card">
             <div class="card-header-flex">
                 <div class="title-group">
-                    <select id="transactionTypeSelect" class="transaction-type-select">
-                        <option value="wallet">Wallet Transactions</option>
-                        <option value="xure_credits">Xure Credits Transactions</option>
-                    </select>
+                    <div class="transaction-type-wrapper">
+                        <select id="transactionTypeSelect" class="transaction-type-select">
+                            <option value="all">All Transactions</option>
+                            <option value="wallet">Wallet Transactions</option>
+                            <option value="xure_credits">Xure Credits Transactions</option>
+                        </select>
+                    </div>
+                    <div id="inlineStatusIndicator" class="inline-status-indicator">
+                        <div class="spinner-small" id="inlineStatusSpinner"></div>
+                        <span id="inlineStatusText">Loading data...</span>
+                    </div>
                 </div>
                 <div class="action-group">
+                    <button class="clear-btn" id="clearSearchBtn">Clear Filters</button>
                     <button class="export-btn" id="exportExcelBtn">Export to Excel</button>
-                    <button class="clear-btn" id="clearSearchBtn">Clear All Filters</button>
                 </div>
             </div>
 
-            <!-- Transactions Table View -->
-            <div class="table-responsive">
+            <div class="table-responsive" id="tableResponsiveContainer">
                 <div class="grid-table" id="dynamicGridTable">
                     <div class="grid-header" id="tableHeaderRow"></div>
-                    <div id="tableBody" style="display: contents;">
-                        <div class="grid-cell loading-text">
-                            <div class="spinner-small"></div>
-                            <span>Loading data from server...</span>
-                        </div>
-                    </div>
+                    <div id="tableBody" style="display: contents;"></div>
                 </div>
             </div>
 
             <div class="table-footer-info">
-                <span id="rowCountDisplay">Loading rows...</span>
+                <span id="rowCountDisplay">Loading entries...</span>
             </div>
         </div>
     </div>
 
-    <!-- Include Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
@@ -746,121 +689,95 @@
             { label: 'Auctions', id: 'auction' }
         ];
 
-        // In-memory runtime caches
         const apiResponseCache = {};
-        const auctionOrdersCache = {}; // Cache for auction order IDs
-
+        const auctionOrdersCache = {};
         let selectedBoxBreaks = new Set();
         let selectedAuctions = new Set();
-        let auctionOrderMap = {}; // Stores map of auction code -> array of order IDs
+        let auctionOrderMap = {};
+        let lowerCaseTransactionsCache = [];
 
-        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        function showInlineStatus(message, showSpinner = true) {
+            const indicator = document.getElementById('inlineStatusIndicator');
+            const spinner = document.getElementById('inlineStatusSpinner');
+            const text = document.getElementById('inlineStatusText');
+            text.innerText = message;
+            spinner.style.display = showSpinner ? 'block' : 'none';
+            indicator.classList.add('show');
+        }
 
-        // Update clear selection button visibility and total combined count
+        function hideInlineStatus() {
+            document.getElementById('inlineStatusIndicator').classList.remove('show');
+        }
+
         function updateClearSelectionButton() {
+            const clearSelBtn = document.getElementById('clearSelectionBtn');
+            if (!clearSelBtn) return;
             const totalSelected = selectedBoxBreaks.size + selectedAuctions.size;
             if (totalSelected > 0) {
-                clearSelectionBtn.style.display = 'inline-block';
-                clearSelectionBtn.innerText = `Clear Selection (${totalSelected})`;
+                clearSelBtn.style.display = 'inline-block';
+                clearSelBtn.innerText = `Clear Selection (${totalSelected})`;
             } else {
-                clearSelectionBtn.style.display = 'none';
+                clearSelBtn.style.display = 'none';
             }
         }
 
-        clearSelectionBtn.addEventListener('click', () => {
-            selectedBoxBreaks.clear();
-            selectedAuctions.clear();
-            document.querySelectorAll('.api-item-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            updateClearSelectionButton();
-            filterTransactionsBySelection();
-        });
-
-        // Real API integration for ListPortalEvents with caching wrapper
         async function fetchPortalEventsApi(navId, token, apiBaseUrl) {
-            if (apiResponseCache[navId]) {
-                return apiResponseCache[navId];
-            }
-
+            if (apiResponseCache[navId]) return apiResponseCache[navId];
             const response = await fetch(`${apiBaseUrl}/ListPortalEvents`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    token: token,
-                    event_type: navId
-                })
+                body: JSON.stringify({ token: token, event_type: navId })
             });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch data.');
-            }
-
+            if (!response.ok) throw new Error('Failed to fetch data.');
             const result = await response.json();
             const data = Array.isArray(result) ? result : (result.data || result.rows || []);
-
             apiResponseCache[navId] = data;
             return data;
         }
 
-        // Fetch order IDs for an auction using auction_id with session caching
         async function fetchAuctionOrdersApi(auctionId, token, apiBaseUrl) {
+            if (auctionOrdersCache[auctionId]) return auctionOrdersCache[auctionId];
             const sessionCacheKey = `auction_orders_${auctionId}`;
-            if (auctionOrdersCache[auctionId]) {
-                return auctionOrdersCache[auctionId];
-            }
-
             const cachedSession = sessionStorage.getItem(sessionCacheKey);
             if (cachedSession) {
                 try {
                     const parsed = JSON.parse(cachedSession);
                     auctionOrdersCache[auctionId] = parsed;
                     return parsed;
-                } catch (e) {
-                    sessionStorage.removeItem(sessionCacheKey);
-                }
+                } catch (e) { sessionStorage.removeItem(sessionCacheKey); }
             }
 
             try {
                 const response = await fetch(`${apiBaseUrl}/GetAuctionOrders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token: token,
-                        auction_id: auctionId
-                    })
+                    body: JSON.stringify({ token: token, auction_id: auctionId })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch auction orders.');
-                }
-
+                if (!response.ok) throw new Error('Failed to fetch auction orders.');
                 const result = await response.json();
                 const rawList = Array.isArray(result) ? result : (result.data || result.rows || []);
-
                 const orderIds = rawList.map(item => item.order_id || item.id || item).filter(Boolean);
-
                 auctionOrdersCache[auctionId] = orderIds;
                 sessionStorage.setItem(sessionCacheKey, JSON.stringify(orderIds));
                 return orderIds;
             } catch (err) {
-                console.error('Error fetching auction orders:', err);
                 return [];
             }
         }
 
         const apiExternalCard = document.getElementById('apiExternalCard');
-        const apiExternalCloseBtn = document.getElementById('apiExternalCloseBtn');
-
-        apiExternalCloseBtn.addEventListener('click', () => {
+        document.getElementById('apiExternalCloseBtn').addEventListener('click', () => {
             apiExternalCard.classList.remove('show');
+            const searchWidget = document.getElementById('apiHeaderSearchWrapper');
+            if (searchWidget) searchWidget.remove();
+            const rightGroup = document.getElementById('apiHeaderRightGroup');
+            if (rightGroup) rightGroup.remove();
             document.querySelectorAll('.header-action-text').forEach(b => b.classList.remove('active-nav'));
         });
 
-        function renderHeaderNav() {
+        async function renderHeaderNav() {
             const container = document.getElementById('headerNavContainer');
             container.innerHTML = '';
-
             navItems.forEach(item => {
                 const btn = document.createElement('button');
                 btn.className = 'header-action-text';
@@ -870,22 +787,15 @@
                 btn.addEventListener('click', async () => {
                     document.querySelectorAll('.header-action-text').forEach(b => b.classList.remove('active-nav'));
                     btn.classList.add('active-nav');
-
                     apiExternalCard.classList.add('show');
                     document.getElementById('apiExternalTitleText').innerText = item.label;
 
                     const cardsContainer = document.getElementById('apiExternalCardsContainer');
-                    cardsContainer.innerHTML = `
-                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
-                            <div class="spinner-small" style="margin: 0 auto 10px auto;"></div>
-                            <span>Fetching data...</span>
-                        </div>
-                    `;
+                    cardsContainer.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted);"><div class="spinner-small" style="margin: 0 auto 10px auto;"></div><span>Fetching data...</span></div>`;
 
                     try {
                         const token = localStorage.getItem('token');
                         const apiBaseUrl = localStorage.getItem('apiBaseUrl');
-
                         const resultList = await fetchPortalEventsApi(item.id, token, apiBaseUrl);
 
                         if (!resultList || resultList.length === 0) {
@@ -893,93 +803,135 @@
                             return;
                         }
 
-                        let gridHtml = `<div class="api-cards-grid">`;
+                        const headerTitleGroup = document.querySelector('.api-external-title-group');
+                        let searchWidget = document.getElementById('apiHeaderSearchWrapper');
+                        if (!searchWidget) {
+                            searchWidget = document.createElement('div');
+                            searchWidget.id = 'apiHeaderSearchWrapper';
+                            searchWidget.style.cssText = 'display: flex; align-items: center; gap: 15px; flex-wrap: wrap;';
+                            searchWidget.innerHTML = `
+                                <div style="position: relative; display: inline-flex; align-items: center;">
+                                    <input type="text" id="universalApiSearch" class="column-search-input" placeholder="Search..." autocomplete="off" style="width: 180px; background: rgba(28, 23, 14, 0.95); color: #fff; border: 1px solid rgba(212, 175, 55, 0.4); padding: 6px 28px 6px 12px; font-size: 13px; border-radius: 8px;">
+                                    <button type="button" id="clearApiSearchBtn" style="position: absolute; right: 8px; background: none; border: none; font-size: 16px; color: var(--text-muted); cursor: pointer; padding: 0; display: none;" title="Clear search">&times;</button>
+                                </div>
+                                <button class="clear-selection-btn" id="clearSelectionBtn" style="display: none;">Clear Selection (0)</button>
+                                <span id="apiSearchCountIndicator" style="font-size: 13px; color: var(--text-muted); white-space: nowrap;"></span>
+                            `;
+                            headerTitleGroup.appendChild(searchWidget);
+
+                            document.getElementById('clearSelectionBtn').addEventListener('click', () => {
+                                selectedBoxBreaks.clear();
+                                selectedAuctions.clear();
+                                auctionOrderMap = {};
+
+                                document.querySelectorAll('.api-item-card.selected').forEach(card => {
+                                    card.classList.remove('selected');
+                                });
+                                updateClearSelectionButton();
+
+                                scheduleTableFilter();
+                            });
+                        }
+
+                        const totalCount = resultList.length;
+                        const countIndicator = document.getElementById('apiSearchCountIndicator');
+                        countIndicator.innerText = `Showing ${totalCount} of ${totalCount} entries`;
+                        updateClearSelectionButton();
+
+                        let htmlContent = `<div class="api-cards-grid" id="apiCardsGridList">`;
+
                         resultList.forEach(entry => {
                             const title = entry.title || Object.values(entry)[0];
                             let footerHtml = '';
-
                             for (const [key, val] of Object.entries(entry)) {
-                                // Skip title, matching values, and ANY ID fields so they don't show up visually
                                 if (key === 'title' || val === title || key.endsWith('_id') || key.includes('_id')) continue;
-
                                 if (val !== null && val !== undefined && val !== '') {
-                                    const formattedKey = key.replace(/_/g, ' ');
-                                    footerHtml += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: 4px;"><span class="api-card-label-muted" style="text-transform: capitalize;">${formattedKey}:</span><span class="api-card-value-highlight">${val}</span></div>`;
+                                    footerHtml += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: 4px;"><span class="api-card-label-muted" style="text-transform: capitalize;">${key.replace(/_/g, ' ')}:</span><span class="api-card-value-highlight">${val}</span></div>`;
                                 }
                             }
 
-                            switch (item.id) {
-                                case 'box_break': {
-                                    const boxBreakCode = entry.box_break_code || '';
-                                    const boxBreakId = entry.box_break_id || entry.id || '';
-                                    const isSelected = selectedBoxBreaks.has(boxBreakCode);
+                            const searchBlob = Object.values(entry).map(v => (v !== null && v !== undefined ? String(v) : '')).join(' ').toLowerCase();
 
-                                    gridHtml += `
-                                        <div class="api-item-card ${isSelected ? 'selected' : ''}" 
-                                            data-box-break-code="${boxBreakCode}"
-                                            data-box-break-id="${boxBreakId}">
-                                            <h4 class="api-card-title" title="${title}">${title}</h4>
-                                            <div>${footerHtml}</div>
-                                        </div>
-                                    `;
-                                    break;
-                                }
-                                case 'auction': {
-                                    const auctionCode = entry.auction_code || '';
-                                    const auctionId = entry.auction_id || entry.id || '';
-                                    const isSelected = selectedAuctions.has(auctionCode);
-
-                                    gridHtml += `
-                                        <div class="api-item-card ${isSelected ? 'selected' : ''}" 
-                                            data-auction-code="${auctionCode}"
-                                            data-auction-id="${auctionId}">
-                                            <h4 class="api-card-title" title="${title}">${title}</h4>
-                                            <div>${footerHtml}</div>
-                                        </div>
-                                    `;
-                                    break;
-                                }
-                                default:
-                                    console.error('Invalid nav type:', item.id);
-                                    break;
+                            if (item.id === 'box_break') {
+                                const code = entry.box_break_code || '';
+                                htmlContent += `<div class="api-item-card ${selectedBoxBreaks.has(code) ? 'selected' : ''}" data-box-break-code="${code}" data-search-blob="${searchBlob}"><h4 class="api-card-title" title="${title}">${title}</h4><div>${footerHtml}</div></div>`;
+                            } else {
+                                const code = entry.auction_code || '';
+                                const auctionId = entry.auction_id || entry.id || '';
+                                htmlContent += `<div class="api-item-card ${selectedAuctions.has(code) ? 'selected' : ''}" data-auction-code="${code}" data-auction-id="${auctionId}" data-search-blob="${searchBlob}"><h4 class="api-card-title" title="${title}">${title}</h4><div>${footerHtml}</div></div>`;
                             }
                         });
-                        gridHtml += `</div>`;
-                        cardsContainer.innerHTML = gridHtml;
+                        htmlContent += `</div>`;
+                        htmlContent += `<div id="apiNoRecordsMessage" style="display: none; text-align: center; padding: 30px; color: var(--text-muted); font-size: 14px;">No records found</div>`;
 
+                        cardsContainer.innerHTML = htmlContent;
                         updateClearSelectionButton();
 
-                        // Add click listeners to cards for multi-selection and filtering
+                        const universalInput = document.getElementById('universalApiSearch');
+                        const clearSearchBtn = document.getElementById('clearApiSearchBtn');
+                        universalInput.value = '';
+                        clearSearchBtn.style.display = 'none';
+
+                        function executeSearch(query) {
+                            let visibleCount = 0;
+                            document.querySelectorAll('.api-item-card').forEach(card => {
+                                const blob = card.getAttribute('data-search-blob') || '';
+                                const matches = blob.includes(query);
+                                card.style.display = matches ? 'flex' : 'none';
+                                if (matches) visibleCount++;
+                            });
+
+                            countIndicator.innerText = `Showing ${visibleCount} of ${totalCount} entries`;
+
+                            const noRecordsEl = document.getElementById('apiNoRecordsMessage');
+                            if (visibleCount === 0) {
+                                noRecordsEl.style.display = 'block';
+                            } else {
+                                noRecordsEl.style.display = 'none';
+                            }
+                        }
+
+                        universalInput.addEventListener('input', (e) => {
+                            const query = e.target.value.trim().toLowerCase();
+                            clearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
+                            executeSearch(query);
+                        });
+
+                        clearSearchBtn.addEventListener('click', () => {
+                            universalInput.value = '';
+                            clearSearchBtn.style.display = 'none';
+                            executeSearch('');
+                            universalInput.focus();
+                        });
+
                         document.querySelectorAll('.api-item-card').forEach(card => {
-                            card.addEventListener('click', async () => {
-                                const activeNav = document.querySelector('.header-action-text.active-nav');
-                                const isAuction = activeNav && activeNav.id === 'nav_btn_auction';
-
+                            card.addEventListener('click', () => {
+                                // 1. Instant Class Toggle & Badge Update ONLY (Zero Main-Thread Blocking)
+                                const isAuction = item.id === 'auction';
                                 if (isAuction) {
-                                    const auctionCode = card.getAttribute('data-auction-code');
+                                    const code = card.getAttribute('data-auction-code');
                                     const auctionId = card.getAttribute('data-auction-id');
-                                    if (!auctionCode) return;
-
-                                    if (selectedAuctions.has(auctionCode)) {
-                                        selectedAuctions.delete(auctionCode);
-                                        delete auctionOrderMap[auctionCode];
+                                    if (!code) return;
+                                    if (selectedAuctions.has(code)) {
+                                        selectedAuctions.delete(code);
+                                        delete auctionOrderMap[code];
                                         card.classList.remove('selected');
                                     } else {
-                                        selectedAuctions.add(auctionCode);
+                                        selectedAuctions.add(code);
                                         card.classList.add('selected');
-
-                                        // Fetch order IDs via API and cache them
                                         if (auctionId) {
-                                            const token = localStorage.getItem('token');
-                                            const apiBaseUrl = localStorage.getItem('apiBaseUrl');
-                                            const orderIds = await fetchAuctionOrdersApi(auctionId, token, apiBaseUrl);
-                                            auctionOrderMap[auctionCode] = orderIds;
+                                            fetchAuctionOrdersApi(auctionId, localStorage.getItem('token'), localStorage.getItem('apiBaseUrl')).then(ids => {
+                                                // Do not restore order IDs after the card was deselected.
+                                                if (selectedAuctions.has(code)) {
+                                                    auctionOrderMap[code] = ids;
+                                                    scheduleTableFilter();
+                                                }
+                                            });
                                         }
                                     }
                                 } else {
                                     const code = card.getAttribute('data-box-break-code');
                                     if (!code) return;
-
                                     if (selectedBoxBreaks.has(code)) {
                                         selectedBoxBreaks.delete(code);
                                         card.classList.remove('selected');
@@ -988,22 +940,19 @@
                                         card.classList.add('selected');
                                     }
                                 }
-
                                 updateClearSelectionButton();
-                                filterTransactionsBySelection();
+
+                                // Table filtering is detached from the card UI.
+                                scheduleTableFilter();
                             });
                         });
-
                     } catch (err) {
-                        console.error('API Error:', err);
                         cardsContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--error-color);">Failed to retrieve records from server.</div>`;
                     }
                 });
-
                 container.appendChild(btn);
             });
         }
-
         renderHeaderNav();
 
         let allTransactions = [];
@@ -1012,9 +961,6 @@
         const dateColumns = new Set();
         const numericColumns = new Set();
         const calendarInstances = {};
-
-        // Cache prefix configuration for session persistence
-        const CACHE_KEY_PREFIX = 'portal_trans_cache_';
 
         const token = localStorage.getItem('token');
         const apiBaseUrl = localStorage.getItem('apiBaseUrl');
@@ -1034,110 +980,193 @@
 
         const profileWidgetBtn = document.getElementById('profileWidgetBtn');
         const profileDropdownMenu = document.getElementById('profileDropdownMenu');
-
-        profileWidgetBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileDropdownMenu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', () => {
-            if (profileDropdownMenu.classList.contains('show')) {
-                profileDropdownMenu.classList.remove('show');
-            }
-        });
+        profileWidgetBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdownMenu.classList.toggle('show'); });
+        window.addEventListener('click', () => profileDropdownMenu.classList.remove('show'));
 
         function classifyColumns(data, cols) {
             dateColumns.clear();
             numericColumns.clear();
-
             cols.forEach(col => {
                 const lowerCol = col.toLowerCase();
                 if (lowerCol.includes('date') || lowerCol.includes('created_at') || lowerCol.includes('updated_at') || lowerCol === 'timestamp' || lowerCol.endsWith('_at')) {
                     dateColumns.add(col);
                     return;
                 }
-
-                let numericCount = 0;
-                let totalValid = 0;
+                let numericCount = 0, totalValid = 0;
                 for (let i = 0; i < Math.min(data.length, 10); i++) {
                     const val = data[i][col];
                     if (val !== null && val !== undefined && val !== '') {
                         totalValid++;
-                        if (!isNaN(Number(val))) {
-                            numericCount++;
-                        }
+                        if (!isNaN(Number(val))) numericCount++;
                     }
                 }
-
-                if (totalValid > 0 && (numericCount / totalValid) >= 0.8) {
-                    numericColumns.add(col);
-                }
+                if (totalValid > 0 && (numericCount / totalValid) >= 0.8) numericColumns.add(col);
             });
         }
+
+        // Table rendering is detached from card interaction.
+        // Render in batches so thousands of rows never monopolize the main thread.
+        let tableRenderVersion = 0;
+        let pendingFilterTimer = null;
 
         function renderTableRows(dataToRender) {
             const tableBody = document.getElementById('tableBody');
             const rowCountDisplay = document.getElementById('rowCountDisplay');
-            tableBody.innerHTML = '';
-            filteredTransactions = dataToRender;
+            const tableResponsiveContainer = document.getElementById('tableResponsiveContainer');
+            const renderVersion = ++tableRenderVersion;
 
-            if (!dataToRender || dataToRender.length === 0) {
-                tableBody.innerHTML = `<div class="grid-cell loading-text">No matching records found.</div>`;
-                rowCountDisplay.innerText = `Showing 0 of ${allTransactions.length} entries`;
+            tableBody.innerHTML = '';
+            filteredTransactions = dataToRender || [];
+            tableResponsiveContainer.classList.add('loaded');
+
+            const totalReference = allTransactions.length;
+            const totalRows = filteredTransactions.length;
+
+            if (totalRows === 0) {
+                hideInlineStatus();
+                rowCountDisplay.innerText = `Showing 0 of ${totalReference} entries`;
                 return;
             }
 
-            rowCountDisplay.innerText = `Showing ${dataToRender.length} of ${allTransactions.length} entries`;
+            hideInlineStatus();
+            rowCountDisplay.innerText = `Showing ${totalRows} of ${totalReference} entries`;
 
-            dataToRender.forEach(rowItem => {
-                columns.forEach(col => {
-                    const cell = document.createElement('div');
-                    cell.className = 'grid-cell';
-                    cell.innerText = rowItem[col] !== null && rowItem[col] !== undefined ? rowItem[col] : '';
-                    tableBody.appendChild(cell);
-                });
-            });
+            let rowIndex = 0;
+            const ROW_BATCH_SIZE = 100;
+
+            function renderBatch() {
+                if (renderVersion !== tableRenderVersion) return;
+
+                const fragment = document.createDocumentFragment();
+                const end = Math.min(rowIndex + ROW_BATCH_SIZE, totalRows);
+
+                for (; rowIndex < end; rowIndex++) {
+                    const rowItem = filteredTransactions[rowIndex];
+
+                    for (let c = 0; c < columns.length; c++) {
+                        const col = columns[c];
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        const value = rowItem[col];
+                        cell.innerText = value !== null && value !== undefined ? value : '';
+                        fragment.appendChild(cell);
+                    }
+                }
+
+                tableBody.appendChild(fragment);
+
+                if (rowIndex < totalRows) {
+                    requestAnimationFrame(renderBatch);
+                }
+            }
+
+            requestAnimationFrame(renderBatch);
         }
 
-        // Filter transactions based on box break codes and auction order IDs matching transaction_no
-        function filterTransactionsBySelection() {
-            const targetCol = columns.find(col => col.toLowerCase() === 'transaction_no');
+        // Card selection is instant. Table filtering runs independently.
+        function scheduleTableFilter() {
+            clearTimeout(pendingFilterTimer);
+            pendingFilterTimer = setTimeout(() => {
+                pendingFilterTimer = null;
 
-            if (selectedBoxBreaks.size === 0 && selectedAuctions.size === 0) {
-                applyColumnFilters();
-                return;
+                if (window.requestIdleCallback) {
+                    requestIdleCallback(() => applyColumnFilters(), { timeout: 250 });
+                } else {
+                    requestAnimationFrame(() => applyColumnFilters());
+                }
+            }, 50);
+        }
+
+        function updateTableFilterIndicator() {
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (!clearBtn) return;
+
+            let activeFilterCount = 0;
+
+            // Transaction type is a table-level filter.
+            const transactionType = document.getElementById('transactionTypeSelect');
+            if (transactionType && transactionType.value !== 'all') {
+                activeFilterCount++;
             }
 
-            if (!targetCol) {
-                console.warn('Column transaction_no not found for filtering.');
-                return;
-            }
-
-            // Collect active box break codes and all order IDs from active auctions
-            const activeBoxBreakCodes = [...selectedBoxBreaks];
-            let activeOrderIds = [];
-            Object.values(auctionOrderMap).forEach(ids => {
-                if (Array.isArray(ids)) {
-                    activeOrderIds.push(...ids);
+            // Column filters only. Card selections are intentionally ignored.
+            columns.forEach(col => {
+                if (dateColumns.has(col)) {
+                    const input = document.getElementById(`search_${col}`);
+                    if (input && input.value.trim() !== '') activeFilterCount++;
+                } else if (numericColumns.has(col)) {
+                    const min = document.getElementById(`search_${col}_min`);
+                    const max = document.getElementById(`search_${col}_max`);
+                    if ((min && min.value.trim() !== '') || (max && max.value.trim() !== '')) {
+                        activeFilterCount++;
+                    }
+                } else {
+                    const input = document.getElementById(`search_${col}`);
+                    if (input && input.value.trim() !== '') activeFilterCount++;
                 }
             });
 
-            const filteredData = allTransactions.filter(rowItem => {
-                const transNo = String(rowItem[targetCol] || '').toLowerCase();
-
-                const matchesBoxBreak = activeBoxBreakCodes.some(code => transNo.includes(String(code).toLowerCase()));
-                const matchesOrder = activeOrderIds.some(orderId => transNo.includes(String(orderId).toLowerCase()));
-
-                return matchesBoxBreak || matchesOrder;
-            });
-
-            renderTableRows(filteredData);
+            if (activeFilterCount > 0) {
+                clearBtn.classList.remove('no-filters');
+                clearBtn.classList.add('has-filters');
+                clearBtn.innerText = `Clear Filters (${activeFilterCount})`;
+                clearBtn.title = `${activeFilterCount} table filter${activeFilterCount === 1 ? '' : 's'} active`;
+            } else {
+                clearBtn.classList.remove('has-filters');
+                clearBtn.classList.add('no-filters');
+                clearBtn.innerText = 'Clear Filters';
+                clearBtn.title = 'No table filters active';
+            }
         }
 
         function applyColumnFilters() {
+            const selectedType = document.getElementById('transactionTypeSelect').value;
+            let baseData = allTransactions;
+            let baseLowerCaseData = lowerCaseTransactionsCache;
+
+            if (selectedType !== 'all') {
+                const indices = [];
+                for (let i = 0; i < allTransactions.length; i++) {
+                    if (String(allTransactions[i].transaction_type || '').toLowerCase() === selectedType) indices.push(i);
+                }
+                baseData = indices.map(i => allTransactions[i]);
+                baseLowerCaseData = indices.map(i => lowerCaseTransactionsCache[i]);
+            }
+
             if (selectedBoxBreaks.size > 0 || selectedAuctions.size > 0) {
-                filterTransactionsBySelection();
-                return;
+                const targetCol = columns.find(col => col.toLowerCase() === 'transaction_no');
+                if (targetCol) {
+                    const activeBoxBreakCodes = [...selectedBoxBreaks].map(code => String(code).toLowerCase());
+                    const activeOrderIds = Object.values(auctionOrderMap)
+                        .flatMap(ids => Array.isArray(ids) ? ids : [])
+                        .map(id => String(id).toLowerCase());
+
+                    const filteredIndices = [];
+                    for (let i = 0; i < baseData.length; i++) {
+                        const transNo = String(baseData[i][targetCol] || '').toLowerCase();
+                        let matches = false;
+
+                        for (let j = 0; j < activeBoxBreakCodes.length; j++) {
+                            if (transNo.includes(activeBoxBreakCodes[j])) {
+                                matches = true;
+                                break;
+                            }
+                        }
+
+                        if (!matches) {
+                            for (let j = 0; j < activeOrderIds.length; j++) {
+                                if (transNo.includes(activeOrderIds[j])) {
+                                    matches = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (matches) filteredIndices.push(i);
+                    }
+                    baseData = filteredIndices.map(i => baseData[i]);
+                    baseLowerCaseData = filteredIndices.map(i => baseLowerCaseData[i]);
+                }
             }
 
             const textFilters = {};
@@ -1152,159 +1181,127 @@
                         dateFilters[col] = { from: dates[0] || '', to: dates[1] || dates[0] };
                     }
                 } else if (numericColumns.has(col)) {
-                    const minInput = document.getElementById(`search_${col}_min`);
-                    const maxInput = document.getElementById(`search_${col}_max`);
-                    const minVal = minInput ? minInput.value.trim() : '';
-                    const maxVal = maxInput ? maxInput.value.trim() : '';
-
+                    const minVal = document.getElementById(`search_${col}_min`)?.value.trim() || '';
+                    const maxVal = document.getElementById(`search_${col}_max`)?.value.trim() || '';
                     if (minVal !== '' || maxVal !== '') {
-                        numericFilters[col] = {
-                            min: minVal !== '' ? Number(minVal) : null,
-                            max: maxVal !== '' ? Number(maxVal) : null
-                        };
+                        numericFilters[col] = { min: minVal !== '' ? Number(minVal) : null, max: maxVal !== '' ? Number(maxVal) : null };
                     }
                 } else {
-                    const input = document.getElementById(`search_${col}`);
-                    if (input) {
-                        const val = input.value.toLowerCase().trim();
-                        if (val !== '') {
-                            textFilters[col] = val;
-                        }
-                    }
+                    const val = document.getElementById(`search_${col}`)?.value.toLowerCase().trim() || '';
+                    if (val !== '') textFilters[col] = val;
                 }
             });
 
-            const hasTextFilters = Object.keys(textFilters).length > 0;
-            const hasDateFilters = Object.keys(dateFilters).length > 0;
-            const hasNumericFilters = Object.keys(numericFilters).length > 0;
+            updateTableFilterIndicator();
 
-            if (!hasTextFilters && !hasDateFilters && !hasNumericFilters) {
-                renderTableRows(allTransactions);
+            if (Object.keys(textFilters).length === 0 && Object.keys(dateFilters).length === 0 && Object.keys(numericFilters).length === 0) {
+                renderTableRows(baseData);
                 return;
             }
 
-            const filteredData = allTransactions.filter(rowItem => {
+            const filteredData = [];
+            for (let i = 0; i < baseData.length; i++) {
+                const rowItem = baseData[i];
+                const rowLower = baseLowerCaseData[i];
+                let match = true;
+
                 for (const col in textFilters) {
-                    const cellValue = rowItem[col];
-                    const query = textFilters[col];
-                    if (cellValue === null || cellValue === undefined || !String(cellValue).toLowerCase().includes(query)) {
-                        return false;
-                    }
+                    if (!rowLower[col]?.includes(textFilters[col])) { match = false; break; }
                 }
+                if (!match) continue;
 
                 for (const col in dateFilters) {
                     const cellValue = rowItem[col];
                     const { from, to } = dateFilters[col];
-                    if (!cellValue) return false;
-
+                    if (!cellValue) { match = false; break; }
                     const cellDate = new Date(cellValue);
-                    if (isNaN(cellDate.getTime())) return false;
+                    if (isNaN(cellDate.getTime())) { match = false; break; }
                     cellDate.setHours(0, 0, 0, 0);
 
-                    if (from) {
-                        const fromDate = new Date(from);
-                        fromDate.setHours(0, 0, 0, 0);
-                        if (cellDate < fromDate) return false;
-                    }
-
-                    if (to) {
-                        const toDate = new Date(to);
-                        toDate.setHours(0, 0, 0, 0);
-                        if (cellDate > toDate) return false;
-                    }
+                    if (from && cellDate < new Date(from).setHours(0, 0, 0, 0)) { match = false; break; }
+                    if (to && cellDate > new Date(to).setHours(0, 0, 0, 0)) { match = false; break; }
                 }
+                if (!match) continue;
 
                 for (const col in numericFilters) {
                     const cellValue = rowItem[col];
                     const { min, max } = numericFilters[col];
-                    if (cellValue === null || cellValue === undefined || cellValue === '') return false;
+                    if (cellValue === null || cellValue === undefined || cellValue === '') { match = false; break; }
                     const numVal = Number(cellValue);
-                    if (isNaN(numVal)) return false;
-
-                    if (min !== null && numVal < min) return false;
-                    if (max !== null && numVal > max) return false;
+                    if (isNaN(numVal) || (min !== null && numVal < min) || (max !== null && numVal > max)) { match = false; break; }
                 }
 
-                return true;
-            });
+                if (match) filteredData.push(rowItem);
+            }
 
             renderTableRows(filteredData);
         }
 
         async function loadTableData() {
-            const tableBody = document.getElementById('tableBody');
             const rowCountDisplay = document.getElementById('rowCountDisplay');
-            const selectedType = document.getElementById('transactionTypeSelect').value;
-            const cacheKey = CACHE_KEY_PREFIX + selectedType;
+            const tableResponsiveContainer = document.getElementById('tableResponsiveContainer');
+            const cacheKey = 'portal_trans_cache_all_combined';
 
-            tableBody.innerHTML = `
-                <div class="grid-cell loading-text">
-                    <div class="spinner-small"></div>
-                    <span>Loading data...</span>
-                </div>
-            `;
-            rowCountDisplay.innerText = 'Loading entries...';
+            tableResponsiveContainer.classList.remove('loaded');
+            showInlineStatus("Loading data from server...", true);
 
             const cachedData = sessionStorage.getItem(cacheKey);
             if (cachedData) {
                 try {
                     allTransactions = JSON.parse(cachedData);
-                    setTimeout(() => {
-                        processTableStructureAndRows();
-                    }, 50);
+                    buildLowerCaseCache();
+                    setTimeout(() => processTableStructureAndRows(), 10);
                     return;
-                } catch (e) {
-                    console.error('Failed to parse cache:', e);
-                    sessionStorage.removeItem(cacheKey);
-                }
+                } catch (e) { sessionStorage.removeItem(cacheKey); }
             }
 
             try {
-                const apiTableUrl = `${apiBaseUrl}/GetPortalTransactions`;
-
-                const response = await fetch(apiTableUrl, {
+                const response = await fetch(`${apiBaseUrl}/GetPortalTransactions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token, transaction_type: selectedType })
+                    body: JSON.stringify({ token: token })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch data.');
-                }
-
+                if (!response.ok) throw new Error('Failed to fetch data.');
                 const result = await response.json();
-                const rawData = Array.isArray(result) ? result : (result.data || result.rows);
-
-                allTransactions = rawData || [];
+                allTransactions = Array.isArray(result) ? result : (result.data || result.rows || []);
                 sessionStorage.setItem(cacheKey, JSON.stringify(allTransactions));
-
+                buildLowerCaseCache();
                 processTableStructureAndRows();
-
             } catch (error) {
-                console.error('Error loading table:', error);
-                tableBody.innerHTML = `<div class="grid-cell error-text">Could not load table data.</div>`;
+                showInlineStatus("Could not load table data.", false);
                 rowCountDisplay.innerText = 'Error loading entries';
+            }
+        }
+
+        function buildLowerCaseCache() {
+            lowerCaseTransactionsCache = new Array(allTransactions.length);
+            for (let i = 0; i < allTransactions.length; i++) {
+                const row = allTransactions[i];
+                const lowerRow = {};
+                for (const key in row) {
+                    const val = row[key];
+                    lowerRow[key] = (val !== null && val !== undefined) ? String(val).toLowerCase() : '';
+                }
+                lowerCaseTransactionsCache[i] = lowerRow;
             }
         }
 
         function processTableStructureAndRows() {
             const tableHeaderRow = document.getElementById('tableHeaderRow');
-            const tableBody = document.getElementById('tableBody');
             const gridTable = document.getElementById('dynamicGridTable');
-            const rowCountDisplay = document.getElementById('rowCountDisplay');
 
             if (!allTransactions || allTransactions.length === 0) {
                 tableHeaderRow.innerHTML = '';
                 gridTable.style.gridTemplateColumns = '1fr';
-                tableBody.innerHTML = `<div class="grid-cell loading-text">No data available.</div>`;
-                rowCountDisplay.innerText = 'Showing 0 of 0 entries';
+                document.getElementById('tableBody').innerHTML = '';
+                showInlineStatus("No records found", false);
+                document.getElementById('rowCountDisplay').innerText = 'Showing 0 of 0 entries';
                 filteredTransactions = [];
                 return;
             }
 
             columns = Object.keys(allTransactions[0]);
             classifyColumns(allTransactions, columns);
-
             gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(min-content, max-content)').join(' ');
 
             tableHeaderRow.innerHTML = '';
@@ -1314,34 +1311,12 @@
                 const formattedColName = col.replace(/_/g, ' ');
 
                 if (dateColumns.has(col)) {
-                    cell.innerHTML = `
-                        <div class="header-content">
-                            <span>${formattedColName}</span>
-                            <div class="date-input-wrapper">
-                                <input type="text" id="search_${col}" class="date-input" placeholder="Select date..." autocomplete="off">
-                                <button type="button" id="clear_date_${col}" class="clear-date-btn" title="Clear date">&times;</button>
-                            </div>
-                        </div>
-                    `;
+                    cell.innerHTML = `<div class="header-content"><span>${formattedColName}</span><div class="date-input-wrapper"><input type="text" id="search_${col}" class="date-input" placeholder="Select date..." autocomplete="off"><button type="button" id="clear_date_${col}" class="clear-date-btn" title="Clear date">&times;</button></div></div>`;
                 } else if (numericColumns.has(col)) {
-                    cell.innerHTML = `
-                        <div class="header-content">
-                            <span>${formattedColName}</span>
-                            <div class="numeric-range-container">
-                                <input type="number" id="search_${col}_min" class="numeric-range-input" placeholder="Min" autocomplete="off">
-                                <input type="number" id="search_${col}_max" class="numeric-range-input" placeholder="Max" autocomplete="off">
-                            </div>
-                        </div>
-                    `;
+                    cell.innerHTML = `<div class="header-content"><span>${formattedColName}</span><div class="numeric-range-container"><input type="number" id="search_${col}_min" class="numeric-range-input" placeholder="Min" autocomplete="off"><input type="number" id="search_${col}_max" class="numeric-range-input" placeholder="Max" autocomplete="off"></div></div>`;
                 } else {
-                    cell.innerHTML = `
-                        <div class="header-content">
-                            <span>${formattedColName}</span>
-                            <input type="text" id="search_${col}" class="column-search-input" placeholder="Search..." autocomplete="off">
-                        </div>
-                    `;
+                    cell.innerHTML = `<div class="header-content"><span>${formattedColName}</span><input type="text" id="search_${col}" class="column-search-input" placeholder="Search..." autocomplete="off"></div>`;
                 }
-
                 tableHeaderRow.appendChild(cell);
             });
 
@@ -1368,27 +1343,44 @@
                         applyColumnFilters();
                     });
                 } else if (numericColumns.has(col)) {
-                    const minEl = document.getElementById(`search_${col}_min`);
-                    const maxEl = document.getElementById(`search_${col}_max`);
-
-                    minEl.addEventListener('input', applyColumnFilters);
-                    maxEl.addEventListener('input', applyColumnFilters);
-                    minEl.addEventListener('click', (e) => e.stopPropagation());
-                    maxEl.addEventListener('click', (e) => e.stopPropagation());
+                    ['min', 'max'].forEach(type => {
+                        const el = document.getElementById(`search_${col}_${type}`);
+                        el.addEventListener('input', () => requestAnimationFrame(() => applyColumnFilters()));
+                        el.addEventListener('click', (e) => e.stopPropagation());
+                    });
                 } else {
                     const inputEl = document.getElementById(`search_${col}`);
                     inputEl.addEventListener('click', (e) => e.stopPropagation());
-                    inputEl.addEventListener('input', applyColumnFilters);
+                    inputEl.addEventListener('mousedown', (e) => e.stopPropagation());
+
+                    let debounceTimer;
+                    inputEl.addEventListener('input', (e) => {
+                        const selectionStart = e.target.selectionStart;
+                        const selectionEnd = e.target.selectionEnd;
+
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(() => {
+                            applyColumnFilters();
+                            const activeField = document.getElementById(`search_${col}`);
+                            if (activeField && document.activeElement !== activeField) {
+                                activeField.focus();
+                                activeField.setSelectionRange(selectionStart, selectionEnd);
+                            }
+                        }, 100);
+                    });
                 }
             });
 
-            renderTableRows(allTransactions);
+            updateTableFilterIndicator();
+            applyColumnFilters();
         }
 
         loadTableData();
 
         document.getElementById('transactionTypeSelect').addEventListener('change', () => {
-            loadTableData();
+            updateTableFilterIndicator();
+            showInlineStatus("Switching transactions...", true);
+            scheduleTableFilter();
         });
 
         document.getElementById('exportExcelBtn').addEventListener('click', () => {
@@ -1396,41 +1388,34 @@
                 alert('No data available to export.');
                 return;
             }
-
             const worksheet = XLSX.utils.json_to_sheet(filteredTransactions);
             const workbook = XLSX.utils.book_new();
-            const selectedType = document.getElementById('transactionTypeSelect').value;
             XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
-            XLSX.writeFile(workbook, `Transaction_Records_${selectedType}.xlsx`);
+            XLSX.writeFile(workbook, `Transaction_Records_${document.getElementById('transactionTypeSelect').value}.xlsx`);
         });
 
         document.getElementById('clearSearchBtn').addEventListener('click', () => {
-            selectedBoxBreaks.clear();
-            selectedAuctions.clear();
-            auctionOrderMap = {};
-            document.querySelectorAll('.api-item-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            updateClearSelectionButton();
+            // IMPORTANT: this button only clears table filters.
+            // Card selections and auction order selections are intentionally preserved.
+
+            const transactionType = document.getElementById('transactionTypeSelect');
+            if (transactionType) transactionType.value = 'all';
 
             columns.forEach(col => {
                 if (dateColumns.has(col)) {
-                    const input = document.getElementById(`search_${col}`);
-                    if (input) input.value = '';
+                    document.getElementById(`search_${col}`).value = '';
                     if (calendarInstances[col]) calendarInstances[col].clear();
-                    const clearBtn = document.getElementById(`clear_date_${col}`);
-                    if (clearBtn) clearBtn.style.display = 'none';
+                    document.getElementById(`clear_date_${col}`).style.display = 'none';
                 } else if (numericColumns.has(col)) {
-                    const minInput = document.getElementById(`search_${col}_min`);
-                    const maxInput = document.getElementById(`search_${col}_max`);
-                    if (minInput) minInput.value = '';
-                    if (maxInput) maxInput.value = '';
+                    document.getElementById(`search_${col}_min`).value = '';
+                    document.getElementById(`search_${col}_max`).value = '';
                 } else {
-                    const input = document.getElementById(`search_${col}`);
-                    if (input) input.value = '';
+                    document.getElementById(`search_${col}`).value = '';
                 }
             });
-            renderTableRows(allTransactions);
+
+            updateTableFilterIndicator();
+            scheduleTableFilter();
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
