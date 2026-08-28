@@ -562,23 +562,41 @@
             vertical-align: top;
         }
 
+        /* Grid columns are sized explicitly from their actual content.
+           Do not use width: 1% / max-width: 0 here; those rules are for
+           normal HTML tables and interfere with this CSS grid table. */
+        th,
+        td,
+        .header-cell {
+            overflow: visible;
+        }
+
+        .grid-cell {
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
         .header-content {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            min-width: 160px;
+            gap: 6px;
+            align-items: stretch;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .column-search-input,
         .date-input,
         .numeric-range-input {
-            padding: 8px 10px;
+            padding: 6px 8px;
             font-size: 12px;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 6px;
             outline: none;
-            font-weight: normal;
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
             box-sizing: border-box;
             background: #ffffff;
             color: #0f172a;
@@ -586,11 +604,18 @@
 
         .numeric-range-container {
             display: flex;
-            gap: 6px;
+            flex-direction: row;
+            gap: 4px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
         }
 
         .numeric-range-container input {
-            width: 50%;
+            width: 50% !important;
+            min-width: 0 !important;
+            flex: 1 1 0;
         }
 
         .date-input-wrapper {
@@ -1489,7 +1514,43 @@
             const hiddenColumns = new Set(['reference_code', 'transaction_type']);
             columns = columns.filter(col => !hiddenColumns.has(col.toLowerCase()));
 
-            gridTable.style.gridTemplateColumns = columns.map(() => 'minmax(220px, max-content)').join(' ');
+            // Size each column to the widest real value/header instead of
+            // letting small columns stretch to the same width as larger ones.
+            // There is intentionally no max-width: long content remains fully visible.
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const columnWidths = columns.map(col => {
+                const headerText = col.replace(/_/g, ' ');
+                let maxWidth = 0;
+
+                ctx.font = '600 13px Inter, sans-serif';
+                maxWidth = Math.max(maxWidth, ctx.measureText(headerText).width);
+
+                ctx.font = '13px Inter, sans-serif';
+                for (const row of allTransactions) {
+                    const value = row[col];
+                    if (value !== null && value !== undefined && value !== '') {
+                        maxWidth = Math.max(maxWidth, ctx.measureText(String(value)).width);
+                    }
+                }
+
+                // The filter controls establish only a minimum usable width.
+                // After that, the column remains sized by its actual content.
+                ctx.font = '12px Inter, sans-serif';
+                if (dateColumns.has(col)) {
+                    maxWidth = Math.max(maxWidth, 120);
+                } else if (numericColumns.has(col)) {
+                    // Enough room for both Min and Max placeholders without clipping.
+                    maxWidth = Math.max(maxWidth, 116);
+                } else {
+                    // Enough room to display the full Search... placeholder.
+                    maxWidth = Math.max(maxWidth, 95);
+                }
+
+                return Math.ceil(maxWidth + 32);
+            });
+
+            gridTable.style.gridTemplateColumns = columnWidths.map(width => `${width}px`).join(' ');
 
             tableHeaderRow.innerHTML = '';
             columns.forEach(col => {
