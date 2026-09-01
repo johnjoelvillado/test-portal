@@ -182,7 +182,6 @@
 </head>
 
 <body>
-    <!-- Background Watermark Image -->
     <img class="bg-watermark" src="https://xuredeal.com/X%20Gold.svg" alt="Xure Watermark">
 
     <div class="card">
@@ -204,7 +203,6 @@
     </div>
 
     <script>
-        // Hardcoded API Base URL
         const API_BASE_URL = 'https://24c1tkvfsa.execute-api.ap-southeast-1.amazonaws.com/xdeal';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -214,7 +212,6 @@
             const password = document.getElementById('password').value;
             const messageEl = document.getElementById('message');
 
-            // Save Base URL to localStorage so downstream pages (like the dashboard) can access it
             localStorage.setItem('apiBaseUrl', API_BASE_URL);
 
             messageEl.style.color = "#a78bfa";
@@ -253,7 +250,6 @@
                     const errorMsg = (typeof resultData === 'object') ? (resultData.error || resultData.message) : resultData;
                     throw new Error(errorMsg);
                 }
-
             } catch (error) {
                 console.error('API Error:', error);
                 messageEl.style.color = "var(--error-color)";
