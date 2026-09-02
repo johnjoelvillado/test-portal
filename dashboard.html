@@ -758,6 +758,13 @@
         let auctionOrderMap = {};
         let lowerCaseTransactionsCache = [];
 
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString; // Fallback if invalid
+
+            return date.toLocaleString();
+        }
+
         function showInlineStatus(message, showSpinner = true) {
             const indicator = document.getElementById('inlineStatusIndicator');
             const spinner = document.getElementById('inlineStatusSpinner');
@@ -817,7 +824,7 @@
                 const rawList = Array.isArray(result) ? result : (result.data || result.rows || result.orders || []);
 
                 auctionOrdersCache[auctionId] = rawList;
-                inMemoryCache.auctionOrders[auctionId] = rawList; // Save to in-memory variable
+                inMemoryCache.auctionOrders[auctionId] = rawList;
                 return rawList;
             } catch (err) {
                 return [];
@@ -925,7 +932,6 @@
                                 });
                                 updateClearSelectionButton();
                                 updateSelectAllButtons();
-
                                 scheduleTableFilter();
                             });
 
@@ -1016,7 +1022,12 @@
                             for (const [key, val] of Object.entries(entry)) {
                                 if (key === 'title' || val === title || key.endsWith('_id') || key.includes('_id')) continue;
                                 if (val !== null && val !== undefined && val !== '') {
-                                    footerHtml += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: 4px;"><span class="api-card-label-muted" style="text-transform: capitalize;">${key.replace(/_/g, ' ')}:</span><span class="api-card-value-highlight">${val}</span></div>`;
+                                    let displayVal = val;
+                                    const lowerKey = key.toLowerCase();
+                                    if (lowerKey.includes('date') || lowerKey.includes('at') || lowerKey === 'timestamp') {
+                                        displayVal = formatDateTime(val);
+                                    }
+                                    footerHtml += `<div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-top: 4px;"><span class="api-card-label-muted" style="text-transform: capitalize;">${key.replace(/_/g, ' ')}:</span><span class="api-card-value-highlight">${displayVal}</span></div>`;
                                 }
                             }
 
@@ -1231,7 +1242,13 @@
                         const cell = document.createElement('div');
                         cell.className = 'grid-cell';
                         const value = rowItem[col];
-                        cell.innerText = value !== null && value !== undefined ? value : '';
+
+                        if (dateColumns.has(col) && value) {
+                            cell.innerText = formatDateTime(value);
+                        } else {
+                            cell.innerText = value !== null && value !== undefined ? value : '';
+                        }
+
                         fragment.appendChild(cell);
                     }
                 }
