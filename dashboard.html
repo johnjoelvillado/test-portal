@@ -708,8 +708,6 @@
                     <div class="transaction-type-wrapper">
                         <select id="transactionTypeSelect" class="transaction-type-select">
                             <option value="all">All Transactions</option>
-                            <option value="wallet">Wallet Transactions</option>
-                            <option value="xure_credits">Xure Credits Transactions</option>
                         </select>
                     </div>
                     <div id="inlineStatusIndicator" class="inline-status-indicator">
@@ -1364,7 +1362,7 @@
                             const matchesCode = activeBoxBreakCodes.some(box_break_code => transNo.includes(box_break_code));
                             matches = matchesCode;
                         } else {
-                            const matchesReferenceId = rowBoxBreakId && activeBoxBreakIds.includes(rowReferenceId);
+                            const matchesReferenceId = rowReferenceId && activeBoxBreakIds.includes(rowReferenceId);
                             const matchesCode = activeBoxBreakCodes.some(box_break_code => transNo.includes(box_break_code));
                             matches = matchesReferenceId || matchesCode;
                         }
@@ -1473,27 +1471,70 @@
             if (inMemoryCache.portalTransactions) {
                 allTransactions = inMemoryCache.portalTransactions;
                 buildLowerCaseCache();
+                populateTransactionTypeOptions();
                 setTimeout(() => processTableStructureAndRows(), 10);
                 return;
             }
 
             try {
-                const response = await fetch(`${apiBaseUrl}/GetPortalTransactions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token })
-                });
-                if (!response.ok) throw new Error('Failed to fetch data.');
-                const result = await response.json();
-                allTransactions = Array.isArray(result) ? result : (result.data || result.rows || []);
+                const PAGE_LIMIT = 5000;
+                let offset = 0;
+                const fetchedRows = [];
+
+                while (true) {
+                    const response = await fetch(`${apiBaseUrl}/GetPortalTransactions`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: token, offset: offset })
+                    });
+                    if (!response.ok) throw new Error('Failed to fetch data.');
+                    const result = await response.json();
+                    const batch = Array.isArray(result) ? result : (result.data || result.rows || []);
+
+                    for (let i = 0; i < batch.length; i++) fetchedRows.push(batch[i]);
+
+                    showInlineStatus(`Loading data from server... ${fetchedRows.length.toLocaleString()} rows fetched`, true);
+
+                    if (batch.length < PAGE_LIMIT) break;
+                    offset += batch.length;
+                }
+
+                allTransactions = fetchedRows;
 
                 inMemoryCache.portalTransactions = allTransactions;
 
                 buildLowerCaseCache();
+                populateTransactionTypeOptions();
                 processTableStructureAndRows();
             } catch (error) {
                 showInlineStatus("Could not load table data.", false);
                 rowCountDisplay.innerText = 'Error loading entries';
+            }
+        }
+
+        function populateTransactionTypeOptions() {
+            const select = document.getElementById('transactionTypeSelect');
+            if (!select) return;
+
+            const previousValue = select.value;
+            const distinctTypes = new Set();
+            for (let i = 0; i < allTransactions.length; i++) {
+                const type = String(allTransactions[i].transaction_type || '').trim().toLowerCase();
+                if (type !== '') distinctTypes.add(type);
+            }
+
+            select.innerHTML = '<option value="all">All Transactions</option>';
+            Array.from(distinctTypes).forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type.replace(/_/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
+                select.appendChild(option);
+            });
+
+            if (previousValue !== 'all' && distinctTypes.has(previousValue)) {
+                select.value = previousValue;
+            } else {
+                select.value = 'all';
             }
         }
 
@@ -1631,6 +1672,9 @@
         loadTableData();
 
         document.getElementById('transactionTypeSelect').addEventListener('change', () => {
+            document.getElementById('tableBody').innerHTML = '';
+            filteredTransactions = [];
+            document.getElementById('rowCountDisplay').innerText = 'Loading entries...';
             showInlineStatus("Switching transactions...", true);
             scheduleTableFilter();
         });
