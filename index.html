@@ -240,6 +240,12 @@
 
                 if (response.ok) {
                     if (typeof resultData === 'object' && resultData !== null) {
+                        if (resultData.role !== 'Accounting') {
+                            localStorage.clear();
+                            messageEl.style.color = "var(--error-color)";
+                            messageEl.innerText = "Access Denied";
+                            return;
+                        }
                         localStorage.setItem('token', resultData.token || '');
                         localStorage.setItem('userData', JSON.stringify(resultData));
                         window.location.href = 'dashboard.html';
